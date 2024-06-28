@@ -9,13 +9,13 @@ import email_icon from '../Assets/email.png';
 export const Login = ({ status, setStatus }) => {
   const navigate = useNavigate();
   const auth = useAuth();
-  const [formData, setFormData] = useState({ email: '', password: '', role: 'user' });
+  const [formData, setFormData] = useState({ email: '', password: '', role: 'user',username:'' });
   const [errorMessage, setErrorMessage] = useState('');
 
   const loginHandler = async (e) => {
     e.preventDefault();
     try {
-      await auth.loginAction({ email: formData.email, password: formData.password });
+      await auth.loginAction({ email: formData.email, password: formData.password, username:formData.username });
       const role = localStorage.getItem('role');
       const redirectLink = role === 'admin' ? '/admindashBoard' : '/home';
       setStatus(true);

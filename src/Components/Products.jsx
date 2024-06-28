@@ -16,7 +16,7 @@ const Products = () => {
     try {
       const token = localStorage.getItem('token');
       const role = localStorage.getItem('role');
-
+      console.log(token,role)
       const response = await axios.get('http://localhost:5632/home/', {
         headers: {
           Authorization: `Bearer ${token}`,

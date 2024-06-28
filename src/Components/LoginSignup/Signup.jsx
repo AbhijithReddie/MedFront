@@ -6,7 +6,7 @@ import user_icon from '../Assets/person.png';
 import password_icon from '../Assets/password.png';
 import email_icon from '../Assets/email.png';
 
-export const Signup = ({ setStatus }) => {
+export const Signup = (setStatus) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
@@ -26,8 +26,10 @@ export const Signup = ({ setStatus }) => {
   };
 
   const signupHandler = async (e) => {
+    console.log("HEllo")
     e.preventDefault();
-    try {
+    try { 
+      console.log(formData);
       const response = await axios.post('http://localhost:5632/signup', formData);
       if (response.data.Valid === "true") {
         localStorage.setItem('token', response.data.token); 

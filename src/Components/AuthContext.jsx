@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
 
   const loginAction = async (data) => {
     try {
+      console.log(data);
       const response = await axios.post("http://localhost:5632/login", { ...data });
       if (response.data) {
         setToken(response.data.token);
