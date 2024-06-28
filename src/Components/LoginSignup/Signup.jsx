@@ -2,20 +2,20 @@ import React, { useState } from 'react';
 import './LoginSignup.css';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
-
 import user_icon from '../Assets/person.png';
 import password_icon from '../Assets/password.png';
 import email_icon from '../Assets/email.png';
 
-export const Signup = () => {
+export const Signup = ({ setStatus }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     username: '',
     mobileNumber: '',
-    role: 'user'  // default role
+    role: 'user' 
   });
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,14 +28,18 @@ export const Signup = () => {
   const signupHandler = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5632/signup', formData); 
-      if (response.data.success === "true") {
+      const response = await axios.post('http://localhost:5632/signup', formData);
+      if (response.data.Valid === "true") {
+        localStorage.setItem('token', response.data.token); 
+        localStorage.setItem('role', formData.role); 
+        setStatus(true); 
         navigate('/home');
       } else {
-        alert('SignUp Unsuccessful');
+        setErrorMessage('SignUp Unsuccessful');
       }
     } catch (error) {
       console.error("There was an error signing up!", error);
+      setErrorMessage('Internal Server Error');
     }
   };
 
@@ -92,31 +96,8 @@ export const Signup = () => {
                 required
               />
             </div>
-            <div className="btn-group">
-              <label htmlFor='btn1'>
-                <input 
-                  type="radio" 
-                  id='btn1' 
-                  name="role" 
-                  value="user"
-                  checked={formData.role === 'user'}
-                  onChange={handleChange} 
-                />
-                User
-              </label>
-              <label htmlFor='btn2'>
-                <input 
-                  type="radio" 
-                  id='btn2' 
-                  name="role" 
-                  value="admin"
-                  checked={formData.role === 'admin'}
-                  onChange={handleChange} 
-                />
-                Admin
-              </label>
-            </div>
           </div>
+          {errorMessage && <div className="error-message">{errorMessage}</div>}
           <div className="forgot-password">
             Already a user? <Link to='/login' className='clickhere'>Click Here to Login</Link>
           </div>

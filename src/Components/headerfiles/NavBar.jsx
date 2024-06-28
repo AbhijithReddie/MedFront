@@ -1,18 +1,14 @@
 import React from 'react';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Navbar, Nav, NavDropdown, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FaUser } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../AuthContext';
 
-const NavBar = ({ status, setStatus }) => {
+const NavBar = () => {
     const navigate = useNavigate();
-
-    const handleLogout = () => {
-        setStatus(false);
-        navigate("/Login");
-    };
+    const { role, logout } = useAuth();
+    const isLoggedIn = role !== null;
 
     return (
         <Navbar bg="dark" variant="dark" expand="lg" className="p-4">
@@ -31,10 +27,10 @@ const NavBar = ({ status, setStatus }) => {
                         <Link to="/about" className="nav-link fs-4">About</Link>
                     </Nav>
                     <Nav>
-                        {status === false ? (
+                        {!isLoggedIn ? (
                             <>
-                                <Button variant="outline-light" className="me-2" onClick={() => navigate("/Login")}>Login</Button>
-                                <Button variant="warning" onClick={() => navigate("/SignUp")}>Sign-up</Button>
+                                <Button variant="outline-light" className="me-2" onClick={() => navigate("/login")}>Login</Button>
+                                <Button variant="warning" onClick={() => navigate("/signup")}>Sign-up</Button>
                             </>
                         ) : (
                             <>
@@ -48,7 +44,7 @@ const NavBar = ({ status, setStatus }) => {
                                     <NavDropdown.Item onClick={() => navigate("/orders")}>Orders</NavDropdown.Item>
                                     <NavDropdown.Item onClick={() => navigate("/profile")}>Profile</NavDropdown.Item>
                                     <NavDropdown.Divider />
-                                    <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
+                                    <NavDropdown.Item onClick={logout}>Logout</NavDropdown.Item>
                                 </NavDropdown>
                             </>
                         )}
