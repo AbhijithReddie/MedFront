@@ -43,20 +43,31 @@ const Products = () => {
 
   const handleAddToCart = async (product) => {
     const userId = localStorage.getItem('userId');
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+
     if (!userId) {
       toast.error('You must be logged in to add items to the cart');
       return;
     }
 
     try {
-      const response = await axios.post('http://localhost:5632/cart/add-to-cart', {
-        userId,
-        productId: product._id,
-        productName: product.productName,
-        quantity: 1, // You can change this to allow users to select quantity
-        price: product.price,
-        prescription: product.prescription
-      });
+      const response = await axios.post(
+        `http://localhost:5632/cart/addtocart/${product._id}`,
+        {
+          userId,
+          productName: product.productName,
+          quantity: 1, 
+          price: product.price,
+          prescription: product.prescription,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Role: role,
+          },
+        }
+      );
 
       toast.success('Item added to cart successfully!');
     } catch (error) {
@@ -177,4 +188,3 @@ const Products = () => {
 };
 
 export { Products };
-
