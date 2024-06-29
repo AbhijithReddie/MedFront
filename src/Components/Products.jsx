@@ -16,7 +16,6 @@ const Products = () => {
     try {
       const token = localStorage.getItem('token');
       const role = localStorage.getItem('role');
-      console.log(token,role)
       const response = await axios.get('http://localhost:5632/home/', {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -42,21 +41,27 @@ const Products = () => {
     setCurrentPage(1);
   };
 
-  const handleAddToCart = async (productId) => {
+  const handleAddToCart = async (product) => {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      toast.error('You must be logged in to add items to the cart');
+      return;
+    }
+
     try {
-      const token = localStorage.getItem('token');
-      const role = localStorage.getItem('role');
-      await axios.post('http://localhost:5632/cart/addToCart',{ productId },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Role: role,
-          },
-        }
-      );
-      toast.success('Product added to cart successfully');
+      const response = await axios.post('http://localhost:5632/cart/add-to-cart', {
+        userId,
+        productId: product._id,
+        productName: product.productName,
+        quantity: 1, // You can change this to allow users to select quantity
+        price: product.price,
+        prescription: product.prescription
+      });
+
+      toast.success('Item added to cart successfully!');
     } catch (error) {
-      toast.error('Failed to add product to cart');
+      console.error('Error adding to cart:', error);
+      toast.error('Error adding to cart. Please try again.');
     }
   };
 
@@ -115,8 +120,8 @@ const Products = () => {
             {product.quantity > 0 ? 'Available' : 'Out of Stock'}
           </Card.Text>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 'auto' }}>
-            <Button variant="primary" onClick={() => handleAddToCart(product.productId)}>Add to Cart</Button>
-            <Button variant="success" onClick={() => handleBuyItem(product.productId)}>Buy Item</Button>
+            <Button variant="primary" onClick={() => handleAddToCart(product)}>Add to Cart</Button>
+            <Button variant="success" onClick={() => handleBuyItem(product._id)}>Buy Item</Button>
           </div>
         </Card.Body>
         <ListGroup className="list-group-flush">
@@ -172,3 +177,4 @@ const Products = () => {
 };
 
 export { Products };
+

@@ -6,7 +6,7 @@ import axios from 'axios';
 import password_icon from '../Assets/password.png';
 import email_icon from '../Assets/email.png';
 
-export const Login = ({ status, setStatus }) => {
+export const Login = () => {
   const navigate = useNavigate();
   const auth = useAuth();
   const [formData, setFormData] = useState({ email: '', password: '', role: 'user',username:'' });
@@ -18,7 +18,6 @@ export const Login = ({ status, setStatus }) => {
       await auth.loginAction({ email: formData.email, password: formData.password, username:formData.username });
       const role = localStorage.getItem('role');
       const redirectLink = role === 'admin' ? '/admindashBoard' : '/home';
-      setStatus(true);
       navigate(redirectLink);
     } catch (error) {
       console.error("There was an error logging in!", error);

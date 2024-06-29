@@ -3,12 +3,22 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Navbar, Nav, NavDropdown, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FaUser } from 'react-icons/fa';
-import { useAuth } from '../AuthContext';
 
 const NavBar = () => {
     const navigate = useNavigate();
-    const { role, logout } = useAuth();
-    const isLoggedIn = role !== null;
+    
+    // Check if the user is logged in based on localStorage
+    const isLoggedIn = localStorage.getItem('token') && localStorage.getItem('username') && localStorage.getItem('role');
+    const username = localStorage.getItem('username');
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        localStorage.removeItem('role');
+        localStorage.removeItem('userId');
+
+        navigate('/login');
+    };
 
     return (
         <Navbar bg="dark" variant="dark" expand="lg" className="p-4">
@@ -35,7 +45,7 @@ const NavBar = () => {
                         ) : (
                             <>
                                 <NavDropdown 
-                                    title={<div className="d-flex align-items-center"><FaUser size={24} /><span className="ms-2">Username</span></div>} 
+                                    title={<div className="d-flex align-items-center"><FaUser size={24} /><span className="ms-2">{username}</span></div>} 
                                     id="basic-nav-dropdown" 
                                     align="end"
                                     style={{ minWidth: "200px", maxWidth: "300px" }} // Adjust the min-width and max-width as needed
@@ -44,7 +54,7 @@ const NavBar = () => {
                                     <NavDropdown.Item onClick={() => navigate("/orders")}>Orders</NavDropdown.Item>
                                     <NavDropdown.Item onClick={() => navigate("/profile")}>Profile</NavDropdown.Item>
                                     <NavDropdown.Divider />
-                                    <NavDropdown.Item onClick={logout}>Logout</NavDropdown.Item>
+                                    <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
                                 </NavDropdown>
                             </>
                         )}
