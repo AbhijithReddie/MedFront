@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../AuthContext'; 
 import './LoginSignup.css';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+// import axios from 'axios';
 import password_icon from '../Assets/password.png';
 import email_icon from '../Assets/email.png';
 

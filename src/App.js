@@ -11,7 +11,7 @@ import { AdminPrivateRoutes } from './Components/AdminPrivateRoutes';
 import Footer from './Components/Footer';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Home } from './Components/Home';
-import { Cart } from './Components/Cart';
+import Cart from './Components/Cart';
 import { Order } from './Components/Order';
 import Payment from './Components/Payment';
 import AdminDashboard from './Components/AdminDashboard';

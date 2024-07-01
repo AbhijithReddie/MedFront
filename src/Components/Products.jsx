@@ -16,7 +16,7 @@ const Products = () => {
     try {
       const token = localStorage.getItem('token');
       const role = localStorage.getItem('role');
-      const response = await axios.get('http://localhost:5632/home/', {
+      const response = await axios.get('http://localhost:5632/home', {
         headers: {
           Authorization: `Bearer ${token}`,
           Role: role,
@@ -68,8 +68,10 @@ const Products = () => {
           },
         }
       );
-
-      toast.success('Item added to cart successfully!');
+      if(response.data.status===false){
+        toast.error('Sorry Product is Out Of Stock')
+      }
+      else toast.success('Item added to cart successfully!');
     } catch (error) {
       console.error('Error adding to cart:', error);
       toast.error('Error adding to cart. Please try again.');
@@ -127,7 +129,7 @@ const Products = () => {
         <Card.Img variant="top" src={product.imageUrl} style={{ height: '150px', objectFit: 'contain' }} />
         <Card.Body style={{ display: 'flex', flexDirection: 'column' }}>
           <Card.Title>{product.productName}</Card.Title>
-          <Card.Text>
+          <Card.Text style={product.quantity > 0 ? {color:'green'} :{color:'red'}}>
             {product.quantity > 0 ? 'Available' : 'Out of Stock'}
           </Card.Text>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 'auto' }}>
