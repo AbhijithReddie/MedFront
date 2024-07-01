@@ -1,59 +1,77 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './Components/AuthContext'; // Assuming you have useAuth hook for accessing auth state
+import { AuthProvider } from './Components/AuthContext'; 
 import { Login } from './Components/LoginSignup/Login';
 import { Signup } from './Components/LoginSignup/Signup';
-import { NavBar } from './Components/headerfiles/NavBar';
-import { Products } from './Components/Products';
-import { About } from './Components/About';
+import { NavBar } from './Components/headerfiles/NavBar'; 
+import { AdminNavBar } from './Components/AdminNavBar'; 
 import { UserPrivateRoutes } from './Components/UserPrivateRoutes';
 import { AdminPrivateRoutes } from './Components/AdminPrivateRoutes';
-import Footer from './Components/Footer';
+import { Footer } from './Components/Footer';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Home } from './Components/Home';
 import Cart from './Components/Cart';
 import { Order } from './Components/Order';
-import Payment from './Components/Payment';
-import AdminDashboard from './Components/AdminDashboard';
-import AddProduct from './Components/AddProduct';
+import { Payment } from './Components/Payment';
+import { AdminDashboard } from './Components/AdminDashboard';
+import { AddProduct } from './Components/AddProduct';
+import { Products } from './Components/Products';
+import { About } from './Components/About';
+import {AdminSideBar} from './Components/AdminSideNav/AdminSideBar'; 
+import './App.css'; 
+import { ManageInventory } from './Components/ManageInventory';
+import { ManageExistingStock } from './Components/ManageExistingStock';
 
 const App = () => {
-  
-  return (
-    <Router>
-      <AuthProvider>
-        <div>
-          <NavBar />
-          <Routes>
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/login" element={<Login />} />
-            
-            <Route path="/orders" element={<Order />} />
-            <Route path='/products' element={<Products />} />
-            <Route path='/about' element={<About />} />
-            <Route path='/payment' element={<Payment />} />
+    const [role, setRole] = useState(null);
 
-            <Route element={<UserPrivateRoutes />}>
-              {/* Private routes for authenticated users */}
-              <Route path='/home' element={<Home />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="*" element={<Navigate to="/home" replace />} />
-            </Route>
+    useEffect(() => {
+        const storedRole = localStorage.getItem('role');
+        if (storedRole) {
+            setRole(storedRole);
+        }
+    }, []);
 
-            <Route element={<AdminPrivateRoutes />}>
-              {/* Private routes for admin users */}
-              <Route path="/admindashboard" element={<AdminDashboard />} />
-              <Route path="/admin/addProduct" element={<AddProduct />} />
-            </Route>
+    return (
+        <Router>
+            <AuthProvider>
+                <div className="app-container">
+                    {role === 'admin' ? <AdminNavBar /> : <NavBar />}
+                    <div className="content-container">
+                        {role === 'admin' && <AdminSideBar />} 
+                        <Routes>
+                            <Route path="/signup" element={<Signup />} />
+                            <Route path="/login" element={<Login />} />
+                            <Route path='/sidebar' element={<AdminSideBar /> }/>
+                            
+                            <Route path="/orders" element={<Order />} />
+                            <Route path='/products' element={<Products />} />
+                            <Route path='/about' element={<About />} />
+                            <Route path='/payment' element={<Payment />} />
+                            <Route path='/manageinv' element={<ManageInventory />} />
+                            <Route path='/manageexisting' element={<ManageExistingStock />} />
+                            <Route path='/addproduct' element={<AddProduct />} />
 
-            {/* Default route if none of the above matches */}
-            <Route path="*" element={<Navigate to="/home" replace />} />
-          </Routes>
-          <Footer />
-        </div>
-      </AuthProvider>
-    </Router>
-  );
+
+                            <Route element={<UserPrivateRoutes />}>
+                                <Route path='/home' element={<Home />} />
+                                <Route path="/cart" element={<Cart />} />
+                                <Route path="*" element={<Navigate to="/home" replace />} />
+                            </Route>
+
+                            <Route element={<AdminPrivateRoutes />}>
+                                <Route path="/admindashboard" element={<AdminDashboard />} />
+                                <Route path="/admin/addProduct" element={<AddProduct />} />
+                            </Route>
+
+                            <Route path="*" element={<Navigate to="/home" replace />} />
+                        </Routes>
+                        <Footer />
+                    </div>
+                </div>
+            </AuthProvider>
+        </Router>
+    );
 };
 
 export default App;

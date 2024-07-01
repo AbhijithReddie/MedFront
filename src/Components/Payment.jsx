@@ -8,7 +8,7 @@ import {
   Row,
 } from 'react-bootstrap';
 
-export default function Payment() {
+export function Payment() {
   const [paymentMethod, setPaymentMethod] = useState('creditDebitCard');
 
   return (
