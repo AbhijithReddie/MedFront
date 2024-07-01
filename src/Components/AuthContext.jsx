@@ -13,12 +13,13 @@ export const AuthProvider = ({ children }) => {
 
   const loginAction = async (data) => {
     try {
-      console.log(data);
+      console.log("From Login ACTION \n",data);
       const response = await axios.post("http://localhost:5632/login", { ...data });
+      console.log("After the request \n",response.data);
       if (response.data) {
         setToken(response.data.token);
         setRole(response.data.role);
-        setUser(response.data.user.username);
+        setUser(response.data.user);
         setUserId(response.data.user._id); // Assuming the userId is stored in response.data.user._id
 
         localStorage.setItem("token", response.data.token);
