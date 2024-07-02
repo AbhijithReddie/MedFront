@@ -3,8 +3,9 @@ import { Container, Row, Col, Card, Button, Form, Image } from 'react-bootstrap'
 import './cssfiles/cartPage.css';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-
+import { useNavigate } from 'react-router-dom';
 const Cart = () =>{
+    const navigate=useNavigate();
     const [cartItems, setCartItems] = useState([]);
     const fetchProd=async ()=>{
       try{
@@ -131,7 +132,7 @@ const Cart = () =>{
                     <Card>
                         <Card.Body>
                             <Card.Title>Total: ${getTotal()}</Card.Title>
-                            <Button variant="success" block>Checkout</Button>
+                            <Button variant="success" block onClick={()=>navigate('/payment')}>Checkout</Button>
                         </Card.Body>
                     </Card>
                 </Col>

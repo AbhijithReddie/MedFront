@@ -3,8 +3,10 @@ import { Carousel, Container, Row, Col, Button } from 'react-bootstrap';
 import slide1 from './Assets/slide1.jpeg'; 
 import slide2 from './Assets/slide2.jpeg'; 
 import slide3 from './Assets/slide3.jpeg';
-
+import {useNavigate} from 'react-router-dom';
 const Home = () => {
+  const navigate=useNavigate();
+
   return (
     <>
       <Container className="py-5 text-center">
@@ -38,7 +40,7 @@ const Home = () => {
           <Col md={8}>
             <h1 className="display-4 fw-bold">Welcome to MedWorld</h1>
             <p className="lead">Your one-stop solution for all medical needs</p>
-            <Button variant="primary" size="lg" className="mt-3">View Products</Button>
+            <Button variant="primary" size="lg" className="mt-3" onClick={()=>navigate('/products')}>View Products</Button>
           </Col>
         </Row>
       </Container>
