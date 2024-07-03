@@ -2,8 +2,19 @@ import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 
 const Footer = () => {
+  const footerStyle = {
+    bottom: '0',
+    width: '100%',
+    zIndex: '1000',
+    backgroundColor: 'dark',
+    color: 'white',
+    paddingTop: '1rem',
+    paddingBottom: '1rem',
+    backgroundColor:'black'
+  };
+
   return (
-    <Container fluid className="bg-dark text-white py-4 mt-5">
+    <Container fluid style={footerStyle}>
       <Row className="justify-content-center">
         <Col md={3} className="text-center mb-3">
           <a href="/" target="_self" className="d-block">
@@ -97,4 +108,4 @@ const Footer = () => {
   );
 };
 
-export {Footer};
+export { Footer };

@@ -26,7 +26,7 @@ const Order = () => {
         }
     };
 
-    if (!order) return <Container className="mt-5 text-center">Loading...</Container>;
+    if (!order) return <Container className="mt-5 text-center">No Orders yet</Container>;
 
     return (
         <Container className="mt-5">

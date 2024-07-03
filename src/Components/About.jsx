@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Row, Col ,Form,Button} from 'react-bootstrap';
-import logo from './Assets/person.png'; 
+import logo from './Assets/about.png'; 
 
 const About= () => {
   return (
@@ -9,7 +9,7 @@ const About= () => {
       <Container>
         <Row className="gy-3 gy-md-4 gy-lg-0 align-items-lg-center">
           <Col xs={12} lg={6} xl={5}>
-            <img className="img-fluid rounded shadow-lg" loading="lazy" src={logo} alt="About MedWorld" />
+            <img className="img-fluid rounded shadow-lg" loading="lazy" src={logo} alt="About MedWorld" style={{'margin-top':'10px'}}/>
           </Col>
           <Col xs={12} lg={6} xl={7}>
             <Row className="justify-content-xl-center">

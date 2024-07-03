@@ -41,7 +41,7 @@ const App = () => {
                 <div className="app-container">
                     {role === 'admin' ? <AdminNavBar /> : <NavBar />}
                     <div className="content-container">
-                        {role === 'admin' ? <AdminSideBar />:<></>} 
+                        {(role === 'admin') && <AdminSideBar />} 
                         <Routes>
                             <Route path="/signup" element={<Signup />} />
                             <Route path="/login" element={<Login />} />
@@ -57,7 +57,7 @@ const App = () => {
                                 <Route path='/home' element={<Home />} />
                                 <Route path="/cart" element={<Cart />} />
                                 <Route path="/profile" element={<UserProfile/>}/>
-                                {/* <Route path="*" element={<Navigate to="/home" replace />} /> */}
+                                <Route path="*" element={<Navigate to="/home" replace />} />
                             </Route>
 
                             <Route element={<AdminPrivateRoutes />}>
@@ -69,7 +69,7 @@ const App = () => {
                                 <Route path="/admin/addProduct" element={<AddProduct />} />
                             </Route>
 
-                            {/* <Route path="*" element={<Navigate to="/home" replace />} /> */}
+                            <Route path="*" element={<Navigate to="/home" replace />} />
                         </Routes>
                         <Footer />
                     </div>

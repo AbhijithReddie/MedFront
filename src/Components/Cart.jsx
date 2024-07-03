@@ -87,7 +87,8 @@ const Cart = () =>{
             Role: role,
           }
         }
-        )  
+        )
+        fetchProd();  
       }
       catch(e){
         console.log("ERROR !!",e);

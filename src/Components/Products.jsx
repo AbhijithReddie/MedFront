@@ -170,7 +170,7 @@ const Products = () => {
               value={searchQuery}
               onChange={handleSearch}
             />
-            <Button variant="outline-primary">Search</Button>
+            <Button variant="danger">Search</Button>
           </Col>
         </Form>
       </div>
