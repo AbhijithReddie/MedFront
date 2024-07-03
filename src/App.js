@@ -22,6 +22,7 @@ import './App.css';
 import { ManageInventory } from './Components/ManageInventory';
 import { ManageExistingStock } from './Components/ManageExistingStock';
 import { Payment2 } from './Components/Payment2';
+import { UserProfile } from './Components/UserProfile';
 
 const App = () => {
     const [role, setRole] = useState("");
@@ -55,6 +56,7 @@ const App = () => {
                             <Route element={<UserPrivateRoutes />}>
                                 <Route path='/home' element={<Home />} />
                                 <Route path="/cart" element={<Cart />} />
+                                <Route path="/profile" element={<UserProfile/>}/>
                                 {/* <Route path="*" element={<Navigate to="/home" replace />} /> */}
                             </Route>
 
