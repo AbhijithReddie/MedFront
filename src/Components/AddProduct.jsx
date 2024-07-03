@@ -9,9 +9,9 @@ import { faImage } from '@fortawesome/free-solid-svg-icons';
 const AddProduct = () => {
     const [productName, setProductName] = useState('');
     const [productId, setProductId] = useState('');
-    const [price, setPrice] = useState('');
+    const [price, setPrice] = useState(0);
     const [prescriptionRequired, setPrescriptionRequired] = useState(false);
-    const [quantity, setQuantity] = useState('');
+    const [quantity, setQuantity] = useState(0);
     const [imageUrl, setImageUrl] = useState('');
     const [description, setDescription] = useState('');
 
@@ -25,7 +25,7 @@ const AddProduct = () => {
             imageUrl,
             description,
         };
-
+        console.log(newProduct)
         try {
             const response = await axios.post('http://localhost:5632/admin/addProduct', newProduct, {
                 headers: {
@@ -44,9 +44,9 @@ const AddProduct = () => {
     const handleReset = () => {
         setProductName('');
         setProductId('');
-        setPrice('');
+        setPrice(0);
         setPrescriptionRequired(false);
-        setQuantity('');
+        setQuantity(0);
         setImageUrl('');
         setDescription('');
     };
@@ -97,7 +97,7 @@ const AddProduct = () => {
                                 <Form.Control
                                     type="text"
                                     value={price}
-                                    onChange={(e) => setPrice(e.target.value)}
+                                    onChange={(e) => setPrice(Number(e.target.value))}
                                 />
                             </Form.Group>
                             <Form.Group className="mb-3">
@@ -113,7 +113,7 @@ const AddProduct = () => {
                                 <Form.Control
                                     type="number"
                                     value={quantity}
-                                    onChange={(e) => setQuantity(e.target.value)}
+                                    onChange={(e) => setQuantity(Number(e.target.value))}
                                 />
                             </Form.Group>
                             <Form.Group className="mb-3">

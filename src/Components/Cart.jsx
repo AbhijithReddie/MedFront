@@ -102,7 +102,7 @@ const Cart = () =>{
         return cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
     };
     const proceedPayment=()=>{
-      localStorage.setItem("pid",undefined);
+      // localStorage.setItem("pid","");
       localStorage.setItem("totalPrice",getTotal());
       navigate('/payment');
     }

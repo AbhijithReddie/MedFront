@@ -21,6 +21,7 @@ import {AdminSideBar} from './Components/AdminSideNav/AdminSideBar';
 import './App.css'; 
 import { ManageInventory } from './Components/ManageInventory';
 import { ManageExistingStock } from './Components/ManageExistingStock';
+import { Payment2 } from './Components/Payment2';
 
 const App = () => {
     const [role, setRole] = useState("");
@@ -48,12 +49,13 @@ const App = () => {
                             <Route path='/products' element={<Products />} />
                             <Route path='/about' element={<About />} />
                             <Route path='/payment' element={<Payment />} />
+                            <Route path='/payment2' element={<Payment2 />} />
 
 
                             <Route element={<UserPrivateRoutes />}>
                                 <Route path='/home' element={<Home />} />
                                 <Route path="/cart" element={<Cart />} />
-                                <Route path="*" element={<Navigate to="/home" replace />} />
+                                {/* <Route path="*" element={<Navigate to="/home" replace />} /> */}
                             </Route>
 
                             <Route element={<AdminPrivateRoutes />}>
@@ -65,7 +67,7 @@ const App = () => {
                                 <Route path="/admin/addProduct" element={<AddProduct />} />
                             </Route>
 
-                            <Route path="*" element={<Navigate to="/home" replace />} />
+                            {/* <Route path="*" element={<Navigate to="/home" replace />} /> */}
                         </Routes>
                         <Footer />
                     </div>

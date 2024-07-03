@@ -11,7 +11,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-export function Payment() {
+export function Payment2() {
   const [paymentMethod, setPaymentMethod] = useState('creditDebitCard');
   const [address,setAddress]=useState('');
   const navigate=useNavigate();
@@ -20,8 +20,14 @@ export function Payment() {
       const userId=localStorage.getItem("userId");
       const token=localStorage.getItem("token");
       const role=localStorage.getItem("role");
-      const res=await axios.post(`http://localhost:5632/orders/saveOrder/${userId}`,
-          {address:address,modeOfPayment:paymentMethod},
+      const pid=localStorage.getItem("pid");
+     const rps=await axios.post(`http://localhost:5632/orders/placeOrder`,
+          {
+            userId:userId,
+            productId:pid,
+            modeOfPayment:paymentMethod,
+            address:address
+          },
           {
             headers:{
               Authorization:`Bearer ${token}`,
@@ -29,9 +35,10 @@ export function Payment() {
             }
           }
         )
-        if(res.data.status===true){
+        
+        if(rps.data.status===true){
           localStorage.removeItem('totalPrice');
-          // localStorage.removeItem('pid');
+          localStorage.removeItem('pid');
           toast.success('Order Placed Successfully!!!');
           navigate('/orders');
         }

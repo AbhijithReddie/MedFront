@@ -27,13 +27,13 @@ const ManageExistingStock = () => {
     const [selectedProduct, setSelectedProduct] = useState({});
     const [editMode, setEditMode] = useState(false);
     const [editedProductName, setEditedProductName] = useState('');
-    const [editedQuantity, setEditedQuantity] = useState('');
-    const [editedPricePerUnit, setEditedPricePerUnit] = useState('');
+    const [editedQuantity, setEditedQuantity] = useState(0);
+    const [editedPricePerUnit, setEditedPricePerUnit] = useState(0);
     const [suggestions, setSuggestions] = useState([]);
 
     const fetchProducts = async () => {
         try {
-            const response = await axios.get('http://localhost:5632/home', {
+            const response = await axios.post('http://localhost:5632/home', {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
                     Role: `${localStorage.getItem('role')}`
@@ -68,14 +68,14 @@ const ManageExistingStock = () => {
         setEditMode(false);
         setSuggestions([]); // Clear suggestions when a product is selected
         // Set the default price per unit when product is selected
-        setEditedPricePerUnit(product.price.toString());
+        setEditedPricePerUnit(product.price);
     };
 
     const handleEditData = () => {
         setEditMode(true);
         setEditedProductName(selectedProduct.productName);
         setEditedQuantity(selectedProduct.quantity);
-        setEditedPricePerUnit(selectedProduct.price.toString());
+        setEditedPricePerUnit(selectedProduct.price);
     };
 
     const handleSubmit = async () => {
@@ -90,7 +90,9 @@ const ManageExistingStock = () => {
         };
 
         try {
-            const response = await axios.post(`http://localhost:5632/admin/productEdit/${selectedProduct.productId}`, updatedProduct, {
+            const response = await axios.post(`http://localhost:5632/admin/productEdit/${selectedProduct.productId}`, 
+                {updatedProduct:updatedProduct},
+                {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
                     Role: `${localStorage.getItem('role')}`
@@ -176,7 +178,7 @@ const ManageExistingStock = () => {
                                 <Form.Control
                                     type="text"
                                     value={editMode ? editedPricePerUnit : selectedProduct.price}
-                                    onChange={(e) => setEditedPricePerUnit(e.target.value)}
+                                    onChange={(e) => setEditedPricePerUnit(Number(e.target.value))}
                                     disabled={!editMode}
                                     style={{ boxShadow: editMode ? '0 0 10px #9ecaed' : 'none' }} // Add box shadow when in edit mode
                                 />
@@ -186,13 +188,13 @@ const ManageExistingStock = () => {
                                 <Form.Control
                                     type="text"
                                     value={editMode ? editedQuantity : selectedProduct.quantity}
-                                    onChange={(e) => setEditedQuantity(e.target.value)}
+                                    onChange={(e) => setEditedQuantity(Number(e.target.value))}
                                     disabled={!editMode}
                                     style={{ boxShadow: editMode ? '0 0 10px #9ecaed' : 'none' }} // Add box shadow when in edit mode
                                 />
                             </Form.Group>
                             {editMode && (
-                                <Button variant="primary" onClick={handleSubmit}>Submit</Button>
+                                <Button variant="primary" onClick={()=>handleSubmit()}>Submit</Button>
                             )}
                         </Form>
                     </div>
@@ -201,7 +203,7 @@ const ManageExistingStock = () => {
             <Row className="mt-4">
                 <Col className="text-center" style={{ marginTop: '50px', marginBottom: '50px' }}>
                     <p style={{ fontWeight: 'bold' }}>
-                        Didn't find the product? To add a new one, <Link to="/addnew" style={{color:"red",fontWeight:"600"}}>Click Here!!</Link>
+                        Didn't find the product? To add a new one, <Link to="/addProduct" style={{color:"red",fontWeight:"600"}}>Click Here!!</Link>
                     </p>
                 </Col>
             </Row>

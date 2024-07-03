@@ -19,7 +19,7 @@ const Products = () => {
     try {
       const token = localStorage.getItem('token');
       const role = localStorage.getItem('role');
-      const response = await axios.get('http://localhost:5632/home', {
+      const response = await axios.post('http://localhost:5632/home', {
         headers: {
           Authorization: `Bearer ${token}`,
           Role: role,
@@ -59,10 +59,6 @@ const Products = () => {
         `http://localhost:5632/cart/addtocart/${product._id}`,
         {
           userId,
-          productName: product.productName,
-          quantity: 1, 
-          price: product.price,
-          prescription: product.prescription,
         },
         {
           headers: {
@@ -82,9 +78,9 @@ const Products = () => {
   };
 
   const handleBuyItem = (product) => {
-    localStorage.setItem("pid",product._id);
+    localStorage.setItem("pid",product.productId);
     localStorage.setItem("totalPrice",product.price);
-    navigate('/payment')
+    navigate('/payment2')
   };
 
   if (loading) {
