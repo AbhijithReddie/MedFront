@@ -34,7 +34,7 @@ const AdminNavBar = () => {
                         {/* Style Manage Inventory button similarly to other links */}
                         <Button 
                             as={Link} 
-                            to="/manage-inventory" 
+                            to="/manageinv" 
                             variant="primary" 
                             className="nav-link fs-4 ms-2"
                             style={{ textDecoration: 'none', color: 'white' }} // Override default link styles

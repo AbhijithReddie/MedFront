@@ -1,129 +1,75 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Card, ProgressBar } from 'react-bootstrap';
+import { Container, Row, Col, Card } from 'react-bootstrap';
 import axios from 'axios';
 
 const Order = () => {
-  const [orders, setOrders] = useState([]);
+    const [order, setOrder] = useState(null);
 
-  useEffect(() => {
+    useEffect(() => {
+        fetchOrders();
+    }, []);
+
     const fetchOrders = async () => {
-      try {
-        const response = await axios.get('http://localhost:5632/orders'); // Adjust the endpoint as needed
-        setOrders(response.data);
-      } catch (error) {
-        console.error('Error fetching orders:', error);
-      }
+        try {
+            const token = localStorage.getItem("token");
+            const role = localStorage.getItem("role");
+            const userId = localStorage.getItem("userId");
+            const response = await axios.post(`http://localhost:5632/orders/${userId}`, null, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Role: role
+                }
+            });
+            setOrder(response.data.order);
+        } catch (error) {
+            console.error('Error fetching orders:', error);
+        }
     };
 
-    fetchOrders();
-  }, []);
+    if (!order) return <Container className="mt-5 text-center">Loading...</Container>;
 
-  return (
-    <section className="h-100 gradient-custom">
-      <Container className="py-5 h-100">
-        <Row className="d-flex justify-content-center align-items-center h-100">
-          <Col lg={10} xl={8}>
-            <Card style={{ borderRadius: '10px' }}>
-              <Card.Header className="px-4 py-5">
-                <h5 className="text-muted mb-0">
-                  Thanks for your Order, <span style={{ color: '#a8729a' }}>Anna</span>!
-                </h5>
-              </Card.Header>
-              <Card.Body className="p-4">
-                <div className="d-flex justify-content-between align-items-center mb-4">
-                  <p className="lead fw-normal mb-0" style={{ color: '#a8729a' }}>
-                    Receipt
-                  </p>
-                  <p className="small text-muted mb-0">Receipt Voucher : 1KAU9-84UIL</p>
-                </div>
-
-                {orders.map((order, index) => (
-                  <Card key={index} className="shadow-0 border mb-4">
-                    <Card.Body>
-                      <Row>
-                        <Col md={2}>
-                          <img
-                            src={order.image}
-                            className="img-fluid"
-                            alt={order.productName}
-                          />
-                        </Col>
-                        <Col md={4} className="d-flex justify-content-center align-items-center">
-                          <p className="text-muted mb-0">{order.productName}</p>
-                        </Col>
-                        <Col md={3} className="d-flex justify-content-center align-items-center">
-                          <p className="text-muted mb-0 small">Qty: {order.quantity}</p>
-                        </Col>
-                        <Col md={3} className="d-flex justify-content-center align-items-center">
-                          <p className="text-muted mb-0 small">${order.price * order.quantity}</p>
-                        </Col>
-                      </Row>
-                      <hr className="mb-4" style={{ backgroundColor: '#e0e0e0', opacity: 1 }} />
-                      <Row className="d-flex align-items-center">
-                        <Col md={2}>
-                          <p className="text-muted mb-0 small">Track Order</p>
-                        </Col>
-                        <Col md={10}>
-                          <ProgressBar
-                            now={order.progress}
-                            style={{ height: '6px', borderRadius: '16px', backgroundColor: '#a8729a' }}
-                          />
-                          <div className="d-flex justify-content-around mb-1">
-                            <p className="text-muted mt-1 mb-0 small ms-xl-5">Out for delivery</p>
-                            <p className="text-muted mt-1 mb-0 small ms-xl-5">Delivered</p>
-                          </div>
-                        </Col>
-                      </Row>
-                    </Card.Body>
-                  </Card>
-                ))}
-
-                <div className="d-flex justify-content-between pt-2">
-                  <p className="fw-bold mb-0">Order Details</p>
-                  <p className="text-muted mb-0">
-                    <span className="fw-bold me-4">Total</span> ${orders.reduce((total, order) => total + (order.price * order.quantity), 0)}
-                  </p>
-                </div>
-
-                <div className="d-flex justify-content-between pt-2">
-                  <p className="text-muted mb-0">Invoice Number : 788152</p>
-                  <p className="text-muted mb-0">
-                    <span className="fw-bold me-4">Discount</span> $19.00
-                  </p>
-                </div>
-
-                <div className="d-flex justify-content-between">
-                  <p className="text-muted mb-0">Invoice Date : 22 Dec, 2019</p>
-                  <p className="text-muted mb-0">
-                    <span className="fw-bold me-4">GST 18%</span> 123
-                  </p>
-                </div>
-
-                <div className="d-flex justify-content-between mb-5">
-                  <p className="text-muted mb-0">Receipts Voucher : 18KU-62IIK</p>
-                  <p className="text-muted mb-0">
-                    <span className="fw-bold me-4">Delivery Charges</span> Free
-                  </p>
-                </div>
-              </Card.Body>
-              <Card.Footer
-                className="border-0 px-4 py-5"
-                style={{
-                  backgroundColor: '#a8729a',
-                  borderBottomLeftRadius: '10px',
-                  borderBottomRightRadius: '10px'
-                }}
-              >
-                <h5 className="d-flex align-items-center justify-content-end text-white text-uppercase mb-0">
-                  Total paid: <span className="h2 mb-0 ms-2">${orders.reduce((total, order) => total + (order.price * order.quantity), 0)}</span>
-                </h5>
-              </Card.Footer>
-            </Card>
-          </Col>
-        </Row>
-      </Container>
-    </section>
-  );
+    return (
+        <Container className="mt-5">
+            <Row className="justify-content-center">
+                <Col md={8}>
+                    <div className="bg-light p-4 rounded shadow-lg">
+                        <h2 className="text-center mb-4">Your Order</h2>
+                        <div className="mb-4">
+                            <h4 className="text-danger mb-3">Order ID: {order.orderId}</h4>
+                            <p className="mb-2"><strong>Username:</strong> {localStorage.getItem("username")}</p>
+                            {order.items.map((item, index) => (
+                                <Row key={index} className="mb-3">
+                                    <Col>
+                                        <Card>
+                                            <Card.Body>
+                                                <Card.Title>{item.productName}</Card.Title>
+                                                <Card.Text>
+                                                    <p><strong>Quantity:</strong> {item.quantity}</p>
+                                                    <p><strong>Price:</strong> ₹{item.price.toFixed(2)}</p>
+                                                </Card.Text>
+                                            </Card.Body>
+                                        </Card>
+                                    </Col>
+                                </Row>
+                            ))}
+                            <p className="mt-3"><strong>GST:</strong> {getGST(order.totalPrice).toFixed(2)}</p>
+                            <p><strong>Delivery Charge:</strong> Free</p>
+                            <h4 className="mt-3">Total Price: ₹{calculateTotalPrice(order.totalPrice, getGST(order.totalPrice)).toFixed(2)}</h4>
+                        </div>
+                    </div>
+                </Col>
+            </Row>
+        </Container>
+    );
 };
 
-export { Order };
+// Function to calculate total price including GST and delivery charges
+const calculateTotalPrice = (tp, gst) => {
+    return tp + gst;
+};
+
+const getGST = (tp) => {
+    return 0.18 * tp;
+};
+
+export default Order;

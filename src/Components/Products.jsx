@@ -3,6 +3,7 @@ import { Form, FormControl, Button, Col, Row, Card, ListGroup, Pagination, Place
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
 const Products = () => {
   const [prods, setProds] = useState([]);
@@ -11,6 +12,8 @@ const Products = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(20);
+
+  const navigate=useNavigate();
 
   const fetchProducts = async () => {
     try {
@@ -78,8 +81,10 @@ const Products = () => {
     }
   };
 
-  const handleBuyItem = (productId) => {
-    // Buy item functionality
+  const handleBuyItem = (product) => {
+    localStorage.setItem("pid",product._id);
+    localStorage.setItem("totalPrice",product.price);
+    navigate('/payment')
   };
 
   if (loading) {
@@ -134,7 +139,7 @@ const Products = () => {
           </Card.Text>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 'auto' }}>
             <Button variant="primary" onClick={() => handleAddToCart(product)}>Add to Cart</Button>
-            <Button variant="success" onClick={() => handleBuyItem(product._id)}>Buy Item</Button>
+            <Button variant="success" onClick={() => handleBuyItem(product)}>Buy Item</Button>
           </div>
         </Card.Body>
         <ListGroup className="list-group-flush">

@@ -1,3 +1,4 @@
+import  axios  from 'axios';
 import React, { useState } from 'react';
 import {
   Button,
@@ -7,10 +8,65 @@ import {
   Form,
   Row,
 } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export function Payment() {
   const [paymentMethod, setPaymentMethod] = useState('creditDebitCard');
-
+  const [address,setAddress]=useState('');
+  const navigate=useNavigate();
+  const confirmPayment=async ()=>{
+    try{
+      const userId=localStorage.getItem("userId");
+      const token=localStorage.getItem("token");
+      const role=localStorage.getItem("role");
+      const pid=localStorage.getItem("pid");
+      if(pid===undefined){
+        const res=await axios.post(`http://localhost:5632/orders/saveOrder/${userId}`,
+          {address:address,modeOfPayment:paymentMethod},
+          {
+            headers:{
+              Authorization:`Bearer ${token}`,
+              Role:role
+            }
+          }
+        )
+        if(res.data.status===true){
+          localStorage.removeItem('totalPrice');
+          localStorage.removeItem('pid');
+          toast.success('Order Placed Successfully!!!');
+          navigate('/orders');
+        }
+      }
+      else{
+        const rps=await axios.post(`http://localhost:5632/orders/placeOrder`,
+          {
+            userId:userId,
+            productId:pid,
+            modeOfPayment:paymentMethod,
+            address:address
+          },
+          {
+            headers:{
+              Authorization:`Bearer ${token}`,
+              Role:role
+            }
+          }
+        )
+        
+        if(rps.data.status===true){
+          localStorage.removeItem('totalPrice');
+          localStorage.removeItem('pid');
+          toast.success('Order Placed Successfully!!!');
+          navigate('/orders');
+        }
+      }
+    }
+    catch(err){
+      console.log(err);
+      toast.error('Sorry Error in Placing the Order!!')
+    }
+  }
   return (
     <Container
       className="py-5"
@@ -27,9 +83,20 @@ export function Payment() {
           <Card className="rounded-3">
             <Card.Body className="p-4">
               <div className="text-left mb-4">
-                <h3 className="fw-bold text-danger mb-4" style={{ marginBottom: '30px' }}>Total Amount Payable: Rs.10000</h3>
+                <h3 className="fw-bold text-danger mb-4" style={{ marginBottom: '30px' }}>Total Amount Payable: {localStorage.getItem('totalPrice')}</h3>
                 <h6>Choose your Payment Option</h6>
               </div>
+               {/* Address Field */}
+               <Form.Group className="mb-4">
+                <Form.Label>Delivery Address</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="Enter your delivery address"
+                />
+              </Form.Group>
               <Form>
                 <Container
                   className={`mb-4 p-4 border border-warning shadow-lg rounded`}
@@ -46,25 +113,25 @@ export function Payment() {
                   />
                   <Form.Group className="mb-3">
                     <Form.Label>Cardholder's Name</Form.Label>
-                    <Form.Control type="text" size="lg" placeholder="Cardholder's Name" />
+                    <Form.Control type="text" size="lg" placeholder="Cardholder's Name" required={paymentMethod==='creditDebitCard'}/>
                   </Form.Group>
                   <Row className="mb-4">
                     <Col md={7}>
                       <Form.Group>
                         <Form.Label>Card Number</Form.Label>
-                        <Form.Control type="text" size="lg" placeholder="xxxx xxxx xxxx xxxx" />
+                        <Form.Control type="text" size="lg" placeholder="xxxx xxxx xxxx xxxx" required={paymentMethod==='creditDebitCard'}/>
                       </Form.Group>
                     </Col>
                     <Col md={3}>
                       <Form.Group>
                         <Form.Label>Expire</Form.Label>
-                        <Form.Control type="text" size="lg" placeholder="MM/YYYY" />
+                        <Form.Control type="text" size="lg" placeholder="MM/YYYY" required={paymentMethod==='creditDebitCard'}/>
                       </Form.Group>
                     </Col>
                     <Col md={2}>
                       <Form.Group>
                         <Form.Label>CVV</Form.Label>
-                        <Form.Control type="text" size="lg" placeholder="CVV" />
+                        <Form.Control type="text" size="lg" placeholder="CVV" required={paymentMethod==='creditDebitCard'}/>
                       </Form.Group>
                     </Col>
                   </Row>
@@ -85,7 +152,7 @@ export function Payment() {
                   />
                   <Form.Group className="mb-4">
                     <Form.Label>Virtual Payment Address</Form.Label>
-                    <Form.Control type="text" size="lg" placeholder="example@upi" />
+                    <Form.Control type="text" size="lg" placeholder="example@upi" required={paymentMethod==='upi'}/>
                   </Form.Group>
                 </Container>
                 
@@ -106,7 +173,7 @@ export function Payment() {
                 </Container>
 
                 <div className="text-center mt-5">
-                  <Button variant="danger" size="lg">
+                  <Button variant="danger" size="lg" onClick={()=>confirmPayment()}>
                     Confirm Order
                   </Button>
                 </div>

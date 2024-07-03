@@ -11,7 +11,7 @@ import { Footer } from './Components/Footer';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Home } from './Components/Home';
 import Cart from './Components/Cart';
-import { Order } from './Components/Order';
+import Order from './Components/Order'
 import { Payment } from './Components/Payment';
 import { AdminDashboard } from './Components/AdminDashboard';
 import { AddProduct } from './Components/AddProduct';
@@ -23,10 +23,11 @@ import { ManageInventory } from './Components/ManageInventory';
 import { ManageExistingStock } from './Components/ManageExistingStock';
 
 const App = () => {
-    const [role, setRole] = useState(null);
+    const [role, setRole] = useState("");
 
     useEffect(() => {
         const storedRole = localStorage.getItem('role');
+        console.log(typeof role);
         if (storedRole) {
             setRole(storedRole);
         }
@@ -38,19 +39,15 @@ const App = () => {
                 <div className="app-container">
                     {role === 'admin' ? <AdminNavBar /> : <NavBar />}
                     <div className="content-container">
-                        {role === 'admin' && <AdminSideBar />} 
+                        {role === 'admin' ? <AdminSideBar />:<></>} 
                         <Routes>
                             <Route path="/signup" element={<Signup />} />
                             <Route path="/login" element={<Login />} />
-                            <Route path='/sidebar' element={<AdminSideBar /> }/>
                             
                             <Route path="/orders" element={<Order />} />
                             <Route path='/products' element={<Products />} />
                             <Route path='/about' element={<About />} />
                             <Route path='/payment' element={<Payment />} />
-                            <Route path='/manageinv' element={<ManageInventory />} />
-                            <Route path='/manageexisting' element={<ManageExistingStock />} />
-                            <Route path='/addproduct' element={<AddProduct />} />
 
 
                             <Route element={<UserPrivateRoutes />}>
@@ -60,6 +57,10 @@ const App = () => {
                             </Route>
 
                             <Route element={<AdminPrivateRoutes />}>
+                                <Route path='/manageexisting' element={<ManageExistingStock />} />
+                                <Route path='/addproduct' element={<AddProduct />} />
+                                <Route path='/manageinv' element={<ManageInventory />} />
+                                <Route path='/sidebar' element={<AdminSideBar /> }/>
                                 <Route path="/admindashboard" element={<AdminDashboard />} />
                                 <Route path="/admin/addProduct" element={<AddProduct />} />
                             </Route>
