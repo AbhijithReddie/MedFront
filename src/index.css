@@ -65,3 +65,6 @@ code {
 body{
   margin-bottom: 150px;
 }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

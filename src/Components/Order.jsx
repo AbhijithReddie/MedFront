@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Card } from 'react-bootstrap';
 import axios from 'axios';
+import {Row, Col, Image } from 'react-bootstrap';
 
 const Order = () => {
-    const [order, setOrder] = useState(null);
+    const [orders, setOrders] = useState(null);
 
     useEffect(() => {
         fetchOrders();
@@ -20,56 +20,43 @@ const Order = () => {
                     Role: role
                 }
             });
-            setOrder(response.data.order);
+            setOrders(response.data.order);
         } catch (error) {
             console.error('Error fetching orders:', error);
         }
     };
 
-    if (!order) return <Container className="mt-5 text-center">No Orders yet</Container>;
-
-    return (
-        <Container className="mt-5">
-            <Row className="justify-content-center">
-                <Col md={8}>
-                    <div className="bg-light p-4 rounded shadow-lg">
-                        <h2 className="text-center mb-4">Your Order</h2>
-                        <div className="mb-4">
-                            <h4 className="text-danger mb-3">Order ID: {order.orderId}</h4>
-                            <p className="mb-2"><strong>Username:</strong> {localStorage.getItem("username")}</p>
-                            {order.items.map((item, index) => (
-                                <Row key={index} className="mb-3">
-                                    <Col>
-                                        <Card>
-                                            <Card.Body>
-                                                <Card.Title>{item.productName}</Card.Title>
-                                                <Card.Text>
-                                                    <p><strong>Quantity:</strong> {item.quantity}</p>
-                                                    <p><strong>Price:</strong> ₹{item.price.toFixed(2)}</p>
-                                                </Card.Text>
-                                            </Card.Body>
-                                        </Card>
-                                    </Col>
-                                </Row>
-                            ))}
-                            <p className="mt-3"><strong>GST:</strong> {getGST(order.totalPrice).toFixed(2)}</p>
-                            <p><strong>Delivery Charge:</strong> Free</p>
-                            <h4 className="mt-3">Total Price: ₹{calculateTotalPrice(order.totalPrice, getGST(order.totalPrice)).toFixed(2)}</h4>
-                        </div>
-                    </div>
-                </Col>
-            </Row>
-        </Container>
-    );
-};
-
-// Function to calculate total price including GST and delivery charges
-const calculateTotalPrice = (tp, gst) => {
-    return tp + gst;
-};
-
-const getGST = (tp) => {
-    return 0.18 * tp;
+    if (!orders) return <div className="mt-5 text-center text-gray-500">No Orders yet</div>;
+    return(
+    <div className="container mx-auto p-6">
+    <h1 className="text-4xl font-extrabold mb-12 text-center text-blue-800">Your Orders</h1>
+    <div className="grid grid-col-1 sm:grid-rows-2 lg:grid-rows-3">
+        {orders.map(order => (
+            <div key={order.orderId} className="border border-gray-200 rounded-lg shadow-lg bg-white hover:shadow-xl transition-shadow duration-300 mb-8">
+                <div className="p-6">
+                    <h2 className="text-2xl font-semibold mb-4 text-green-700">Order ID: {order.orderId}</h2>
+                    <Row className="space-y-4" style={{'margin-left':'2px'}}>
+                        {order.items.map((item, index) => (
+                            <Row key={index} className="border border-gray-200 rounded-lg shadow-sm bg-gray-50 hover:bg-gray-100 transition-colors duration-300 p-4 mb-4">
+                                <Col md={3} className="d-flex align-items-center justify-content-center">
+                                    <Image src={item.imageUrl} thumbnail className="w-15 h-15 object-cover" style={{'height':'150px','width':'150px'}}/>
+                                </Col>
+                                <Col md={9} className="pl-4">
+                                    <p className="text-lg font-medium text-gray-700">Product Name: {item.productName}</p>
+                                    <p className="text-gray-700">Price: ₹{item.price}</p>
+                                    <p className="text-gray-700">Quantity: {item.quantity}</p>
+                                </Col>
+                            </Row>
+                        ))}
+                    </Row>
+                    <h3 className="text-xl font-semibold mt-6 text-purple-700">Total Price: ₹{order.totalPrice}</h3>
+                </div>
+            </div>
+        ))}
+    </div>
+</div>
+        
+);
 };
 
 export default Order;

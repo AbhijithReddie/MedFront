@@ -15,13 +15,13 @@ export function Payment2() {
   const [paymentMethod, setPaymentMethod] = useState('creditDebitCard');
   const [address,setAddress]=useState('');
   const navigate=useNavigate();
-  const confirmPayment=async ()=>{
+  const confirmPayment2=async ()=>{
     try{
       const userId=localStorage.getItem("userId");
       const token=localStorage.getItem("token");
       const role=localStorage.getItem("role");
       const pid=localStorage.getItem("pid");
-     const rps=await axios.post(`http://localhost:5632/orders/placeOrder`,
+     const rps=await axios.post('http://localhost:5632/orders/placeOrder',
           {
             userId:userId,
             productId:pid,
@@ -35,13 +35,11 @@ export function Payment2() {
             }
           }
         )
-        
-        if(rps.data.status===true){
-          localStorage.removeItem('totalPrice');
-          localStorage.removeItem('pid');
-          toast.success('Order Placed Successfully!!!');
-          navigate('/orders');
-        }
+        console.log(rps.data.order);
+        localStorage.removeItem('totalPrice');
+        localStorage.removeItem('pid');
+        toast.success('Order Placed Successfully!!!');
+        navigate('/orders');
     }
     catch(err){
       console.log(err);
@@ -154,7 +152,7 @@ export function Payment2() {
                 </Container>
 
                 <div className="text-center mt-5">
-                  <Button variant="danger" size="lg" onClick={()=>confirmPayment()}>
+                  <Button variant="danger" size="lg" onClick={()=>confirmPayment2()}>
                     Confirm Order
                   </Button>
                 </div>
