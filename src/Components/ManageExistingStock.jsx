@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, FormControl, Button, Col, Row, Card, InputGroup, ListGroup } from 'react-bootstrap';
+import { Form, FormControl, Button, Col, Row, Card, InputGroup, ListGroup ,Modal} from 'react-bootstrap';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -30,6 +30,10 @@ const ManageExistingStock = () => {
     const [editedQuantity, setEditedQuantity] = useState(0);
     const [editedPricePerUnit, setEditedPricePerUnit] = useState(0);
     const [suggestions, setSuggestions] = useState([]);
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+
+    const handleCloseModal = () => setShowConfirmationModal(false);
+    const handleShowModal = () => setShowConfirmationModal(true);
 
     const fetchProducts = async () => {
         try {
@@ -107,20 +111,48 @@ const ManageExistingStock = () => {
             toast.error('Error updating product. Please try again.');
         }
     };
+    const confirmRemove = async () => {
+        try {
+            await axios.post(`http://localhost:5632/admin/delete/${selectedProduct.productId}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    Role: `${localStorage.getItem('role')}`
+                }
+            });
+            toast.success('Product removed successfully!');
+            setSelectedProduct({});
+            setEditMode(false);
+            fetchProducts();
+            handleCloseModal(); // Close modal after successful removal
+        } catch (error) {
+            console.error('Error removing product:', error);
+            toast.error('Error removing product. Please try again.');
+            handleCloseModal(); // Close modal on error as well
+        }
+    };
+    const handleRemove = async () => {
+        try {
+            handleShowModal();
+        } catch (error) {
+            console.error('Error removing product:', error);
+            toast.error('Error removing product. Please try again.');
+        }
+    };
 
     return (
         <div style={{ marginBottom: '100px' }}>
             <ToastContainer />
             <Row className="mt-4">
                 <Col md={6} className="mx-auto">
-                    <InputGroup style={{ borderRadius: '10px', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>
-                        <FormControl
-                            type="text"
-                            placeholder="Search products"
-                            value={searchQuery}
-                            onChange={handleSearch}
-                        />
-                        <Button variant="primary">Search</Button> {/* Changed to fully colored */}
+                <InputGroup style={{ borderRadius: '10px', boxShadow: '0 4px 8px rgba(0,0,0,0.1)',height:'45px'}}>
+                    <FormControl
+                        type="text"
+                        placeholder="Search products"
+                        value={searchQuery}
+                        onChange={handleSearch}
+                        style={{ height: 'inherit', flex: '1 1 auto', width:'300px' }} // Added flex property for responsiveness
+                    />
+                    <Button variant="primary" style={{ flex: '0 0 auto', width: '100px' ,height:'inherit'}}>Search</Button> {/* Set fixed width for the button */}
                     </InputGroup>
                     {suggestions.length > 0 && (
                         <ListGroup className="mt-2">
@@ -153,7 +185,7 @@ const ManageExistingStock = () => {
                                     <FontAwesomeIcon icon={faImage} size="6x" />
                                 )}
                                 <Card.Title className="mt-3">{selectedProduct.productName}</Card.Title>
-                                <Card.Text>The Details of the product selected will appear here.</Card.Text>
+                                <Card.Text>{selectedProduct.description}.</Card.Text>
                             </Card.Body>
                         </Card>
                     ) : (
@@ -194,7 +226,10 @@ const ManageExistingStock = () => {
                                 />
                             </Form.Group>
                             {editMode && (
-                                <Button variant="primary" onClick={()=>handleSubmit()}>Submit</Button>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <Button variant="primary" onClick={handleSubmit}>Submit</Button>
+                                    <Button variant="danger" onClick={handleRemove}>Remove</Button>
+                                </div>
                             )}
                         </Form>
                     </div>
@@ -207,6 +242,20 @@ const ManageExistingStock = () => {
                     </p>
                 </Col>
             </Row>
+            <Modal show={showConfirmationModal} onHide={handleCloseModal}>
+            <Modal.Header closeButton>
+                <Modal.Title>Confirm Removal</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>Are you sure you want to remove this product?</Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={handleCloseModal}>
+                    Cancel
+                </Button>
+                <Button variant="danger" onClick={confirmRemove}>
+                    Remove
+                </Button>
+            </Modal.Footer>
+        </Modal>
         </div>
     );
 };

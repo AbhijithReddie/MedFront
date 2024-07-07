@@ -20,6 +20,7 @@ const Cart = () => {
                     Role: role,
                 },
             });
+            console.log(response.data);
             setCartItems(response.data);
         } catch (e) {
             console.log("Error in Fetching cart items ", e);
@@ -87,7 +88,23 @@ const Cart = () => {
 
     const proceedPayment = () => {
         localStorage.setItem("totalPrice", getTotal());
-        navigate('/payment');
+        //if(localStorage.getItem("pid")) navigate('/payment2');
+        let requiresPrescription = false;
+
+    for (let i = 0; i < cartItems.length; i++) {
+        if (cartItems[i].prescription) {
+            requiresPrescription = true;
+            break;
+        }
+    }
+
+    if (requiresPrescription) {
+        console.log('Navigating to Prescription');
+        navigate('/prescription');
+    } else {
+        console.log('Navigating to Confirmation');
+        navigate('/confirmation');
+    }
     };
 
     return (

@@ -23,7 +23,9 @@ import { ManageInventory } from './Components/ManageInventory';
 import { ManageExistingStock } from './Components/ManageExistingStock';
 import { Payment2 } from './Components/Payment2';
 import { UserProfile } from './Components/UserProfile';
-
+import Confirmation from './Components/Confirmation';
+import PrescriptionUpload from './Components/PrescriptionUpload';
+import { HeaderBar } from './Components/HeaderBar';
 const App = () => {
     const [role, setRole] = useState("");
 
@@ -33,13 +35,13 @@ const App = () => {
         if (storedRole) {
             setRole(storedRole);
         }
-    }, []);
+    },[]);
 
     return (
         <Router>
             <AuthProvider>
-                <div className="app-container">
-                    {role === 'admin' ? <AdminNavBar /> : <NavBar />}
+                <div className="app-container" style={{'alignItems':'center'}}>
+                        <HeaderBar />
                     <div className="content-container">
                         {(role === 'admin') && <AdminSideBar />} 
                         <Routes>
@@ -51,7 +53,8 @@ const App = () => {
                             <Route path='/about' element={<About />} />
                             <Route path='/payment' element={<Payment />} />
                             <Route path='/payment2' element={<Payment2 />} />
-
+                            <Route path='/confirmation' element={<Confirmation/>}/>
+                            <Route path='/prescription' element={<PrescriptionUpload/>}/>
 
                             <Route element={<UserPrivateRoutes />}>
                                 <Route path='/home' element={<Home />} />

@@ -139,7 +139,7 @@ const Products = () => {
           </div>
         </Card.Body>
         <ListGroup className="list-group-flush">
-          <ListGroup.Item>Price: {product.price}</ListGroup.Item>
+          <ListGroup.Item>Price: ₹{product.price.toFixed(2)}</ListGroup.Item>
         </ListGroup>
       </Card>
     </Col>

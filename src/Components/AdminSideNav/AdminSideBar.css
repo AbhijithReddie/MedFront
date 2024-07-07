@@ -29,3 +29,7 @@
     overflow-y: auto;
     height: calc(100vh - 56px); /* Adjust for space below navbar */
 }
+
+.me-3{
+    display: inline;
+}

@@ -62,7 +62,7 @@ export function Payment2() {
           <Card className="rounded-3">
             <Card.Body className="p-4">
               <div className="text-left mb-4">
-                <h3 className="fw-bold text-danger mb-4" style={{ marginBottom: '30px' }}>Total Amount Payable: {localStorage.getItem('totalPrice')}</h3>
+                <h3 className="fw-bold text-danger mb-4" style={{ marginBottom: '30px' }}>Total Amount Payable: ₹{localStorage.getItem('totalPrice')}</h3>
                 <h6>Choose your Payment Option</h6>
               </div>
                {/* Address Field */}

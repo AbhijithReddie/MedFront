@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 // import axios from 'axios';
 import password_icon from '../Assets/password.png';
 import email_icon from '../Assets/email.png';
-
+// import { toast } from 'react-toastify';
 export const Login = () => {
   const navigate = useNavigate();
   const auth = useAuth();
@@ -18,6 +18,7 @@ export const Login = () => {
       await auth.loginAction({ email: formData.email, password: formData.password, username:formData.username });
       const role = localStorage.getItem('role');
       const redirectLink = role === 'admin' ? '/admindashBoard' : '/home';
+      // toast.success('Login Successful!!')
       navigate(redirectLink);
     } catch (error) {
       console.error("There was an error logging in!", error);

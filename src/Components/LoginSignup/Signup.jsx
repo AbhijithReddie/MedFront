@@ -5,7 +5,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import user_icon from '../Assets/person.png';
 import password_icon from '../Assets/password.png';
 import email_icon from '../Assets/email.png';
-
+import {toast} from 'react-toastify';
 const Signup = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -34,7 +34,7 @@ const Signup = () => {
         localStorage.setItem('role', response.data.role); 
         localStorage.setItem('username', response.data.user.username); 
         localStorage.setItem('userId', response.data.user._id); 
-
+        alert('SignUp Successful')
         navigate('/home');
       } else {
         setErrorMessage('SignUp Unsuccessful');
