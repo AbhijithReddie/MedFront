@@ -81,10 +81,12 @@ const Products = () => {
     localStorage.setItem("pid",product._id);
     localStorage.setItem("totalPrice",product.price);
     console.log(product.prescriptionRequired)
-    if(product.prescriptionRequired)
-      navigate('/prescription');
-    else
-      navigate('/confirmation')
+    if(product.prescriptionRequired){
+      navigate('/prodPres')
+    }
+    else{
+      navigate('/confirmProd')
+    }
   };
 
   if (loading) {

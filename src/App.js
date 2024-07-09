@@ -25,7 +25,8 @@ import { Payment2 } from './Components/Payment2';
 import { UserProfile } from './Components/UserProfile';
 import Confirmation from './Components/Confirmation';
 import PrescriptionUpload from './Components/PrescriptionUpload';
-
+import ConfirmProd from './Components/ConfirmProd';
+import ProdPrescription from './Components/ProdPrescription';
 const App = () => {
     const [role, setRole] = useState("");
 
@@ -53,7 +54,8 @@ const App = () => {
                             <Route path='/payment2' element={<Payment2 />} />
                             <Route path='/confirmation' element={<Confirmation/>}/>
                             <Route path='/prescription' element={<PrescriptionUpload/>}/>
-
+                            <Route path='/confirmProd' element={<ConfirmProd/>}/>
+                            <Route path='/prodPres' element={<ProdPrescription/>}/>
                             <Route element={<UserPrivateRoutes />}>
                                 <Route path='/home' element={<Home />} />
                                 <Route path="/cart" element={<Cart />} />

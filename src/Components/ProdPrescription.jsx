@@ -3,9 +3,9 @@ import { Container, Row, Col, Card, Button,Image } from 'react-bootstrap'; // As
 import {useNavigate} from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-const PrescriptionUpload = () => {
+const ProdPrescription = () => {
     const navigate=useNavigate();
-    const [cartItems,setCartItems]=useState([]);
+    const [prod,setProd]=useState(null);
     const [prescriptionFile, setPrescriptionFile] = useState(null);
     useEffect(()=>{
         fetchItems();
@@ -15,7 +15,8 @@ const PrescriptionUpload = () => {
             const token=localStorage.getItem("token");
             const role = localStorage.getItem("role");
             const userId=localStorage.getItem("userId");
-            const response=await axios.post(`http://localhost:5632/cart/`,{userId:userId},
+            const pid=localStorage.getItem("pid");
+            const response=await axios.post(`http://localhost:5632/home/getProd/${pid}`,
                     {
                         headers:{
                             Authorization: `Bearer ${token}`,
@@ -23,12 +24,12 @@ const PrescriptionUpload = () => {
                         }
                     }
                 )
-                const filteredItems = response.data.filter(item => item.prescription);
-                setCartItems(filteredItems);
+                console.log(response.data);
+                setProd(response.data);
         }
         catch(e){
             console.log('Error : ',e);
-            toast.error('Failed to Reload Cart');
+            toast.error('Failed to Reload Product');
         }
     }
     const handleFileChange = (e) => {
@@ -37,7 +38,7 @@ const PrescriptionUpload = () => {
 
     const handleSubmit = (e) => {
         if(prescriptionFile)
-            navigate('/confirmation');
+            navigate('/confirmProd');
         else toast.error('Please Upload the Prescription')
     };
 
@@ -49,29 +50,27 @@ const PrescriptionUpload = () => {
                         <h2 className="text-center mb-4 text-gray-800">Prescription Upload</h2>
                         <div className="mb-4">
                             <h4 className="text-gray-800 mb-3">Cart Items Requiring Prescription:</h4>
-                            {cartItems.length === 0 ? (
+                            {prod === null ? (
                                 <p className="text-gray-600 text-center">No items require prescription.</p>
                             ) : (
-                                cartItems.map(item => (
-                                    <Row key={item.cartItemID} className="cart-item mb-3 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 p-4" >
+                                    <Row className="cart-item mb-3 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 p-4" >
                                         <Col md={2} className="flex items-center justify-center">
-                                            <Image src={item.imageUrl} thumbnail className="w-24 h-24 object-cover" />
+                                            <Image src={prod.imageUrl} thumbnail className="w-24 h-24 object-cover" />
                                         </Col>
                                         <Col md={4} className="flex flex-col justify-center">
-                                            <h5 className="text-xl font-semibold text-gray-700">{item.productName}</h5>
-                                            <p className="text-gray-600">₹{item.pricePerUnit}</p>
+                                            <h5 className="text-xl font-semibold text-gray-700">{prod.productName}</h5>
                                             <div className="quantity-control flex items-center mt-2">
-                                                <h5 className="mx-2 text-lg">{item.quantity}</h5>
+                                                <h5 className="mx-2 text-lg">1</h5>
                                             </div>
                                         </Col>
                                         <Col md={2} className="flex items-center justify-center">
-                                            <p className="text-lg font-medium text-gray-700">Total: ₹{item.price}</p>
+                                            <p className="text-lg font-medium text-gray-700">Total: ₹{prod.price}</p>
                                         </Col>
                                         <Col md={2} className="flex items-center justify-center">
                                         </Col>
                                     </Row>
-                                ))
-                            )}
+                                )
+                            }
                             <form onSubmit={handleSubmit}>
                                 <div className="mb-3">
                                     <label htmlFor="prescriptionFile" className="block text-gray-800">Upload Prescription:</label>
@@ -96,4 +95,4 @@ const PrescriptionUpload = () => {
     );
 };
 
-export default PrescriptionUpload;
+export default ProdPrescription;

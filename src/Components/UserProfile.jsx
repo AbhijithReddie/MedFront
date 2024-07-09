@@ -27,8 +27,9 @@ const UserProfile = () => {
   }, []);
 
   // Function to fetch profile data
-  const fetchProfileData = () => {
-    axios.get('http://localhost:5632/profile/')
+  const fetchProfileData = async () => {
+    const userId=localStorage.getItem("userId");
+    await axios.post('http://localhost:5632/profile/',{userId:userId})
       .then(response => setProfileData(response.data))
       .catch(error => console.error(error));
   };
@@ -94,17 +95,20 @@ const UserProfile = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const url = isEditing ? 'http://localhost:5632/profile/edit' : 'http://localhost:5632/profile/add';
-    const method = isEditing ? 'put' : 'post';
+    console.log(profileData);
+    /*const url = isEditing ? 'http://localhost:5632/profile/add' : 'http://localhost:5632/profile/edit';
+    const method = isEditing ? 'post' : 'put';
 
-    axios({
+    await axios({
       method: method,
       url: url,
-      data: profileData,
+      body: profileData,
       
-    })
+    })*/
+    const userId=localStorage.getItem("userId");
+    await axios.post('http://localhost:5632/profile/add',{profileData,userId:userId})
       .then(response => {
         setIsEditing(false);
         // Update profile data with response
@@ -114,6 +118,7 @@ const UserProfile = () => {
         console.error('Error submitting profile data:', error);
         // Optionally set an error state to display to the user
       });
+      fetchProfileData();
   };
 
   return (
