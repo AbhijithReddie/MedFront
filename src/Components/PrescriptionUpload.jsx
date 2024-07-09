@@ -15,16 +15,34 @@ const PrescriptionUpload = () => {
             const token=localStorage.getItem("token");
             const role = localStorage.getItem("role");
             const userId=localStorage.getItem("userId");
-            const response=await axios.post(`http://localhost:5632/cart/`,{userId:userId},
-                {
-                    headers:{
-                        Authorization: `Bearer ${token}`,
-                        Role: role
+            const pid=localStorage.getItem("pid");
+            console.log(pid);
+            if(pid){
+                const response=await axios.post(`http://localhost:5632/addtocart/${pid}`,{userId:userId},
+                    {
+                        headers:{
+                            Authorization: `Bearer ${token}`,
+                            Role: role
+                        }
                     }
-                }
-            )
-            const filteredItems = response.data.filter(item => item.prescriptionRequired);
-            setCartItems(filteredItems);
+                )
+                console.log(response.data);
+                const farr=[];
+                farr.push(response.data.cart);
+                setCartItems(farr);
+            }
+            else{
+                const response=await axios.post(`http://localhost:5632/cart/`,{userId:userId},
+                    {
+                        headers:{
+                            Authorization: `Bearer ${token}`,
+                            Role: role
+                        }
+                    }
+                )
+                const filteredItems = response.data.filter(item => item.prescription);
+                setCartItems(filteredItems);
+            }
         }
         catch(e){
             console.log('Error : ',e);

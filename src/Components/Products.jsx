@@ -78,9 +78,13 @@ const Products = () => {
   };
 
   const handleBuyItem = (product) => {
-    localStorage.setItem("pid",product.productId);
+    localStorage.setItem("pid",product._id);
     localStorage.setItem("totalPrice",product.price);
-    navigate('/payment2')
+    console.log(product.prescriptionRequired)
+    if(product.prescriptionRequired)
+      navigate('/prescription');
+    else
+      navigate('/confirmation')
   };
 
   if (loading) {

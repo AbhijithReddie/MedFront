@@ -17,7 +17,7 @@ import { AdminDashboard } from './Components/AdminDashboard';
 import { AddProduct } from './Components/AddProduct';
 import { Products } from './Components/Products';
 import { About } from './Components/About';
-import {AdminSideBar} from './Components/AdminSideNav/AdminSideBar'; 
+import { AdminSideBar } from './Components/AdminSideNav/AdminSideBar'; 
 import './App.css'; 
 import { ManageInventory } from './Components/ManageInventory';
 import { ManageExistingStock } from './Components/ManageExistingStock';
@@ -25,29 +25,27 @@ import { Payment2 } from './Components/Payment2';
 import { UserProfile } from './Components/UserProfile';
 import Confirmation from './Components/Confirmation';
 import PrescriptionUpload from './Components/PrescriptionUpload';
-import { HeaderBar } from './Components/HeaderBar';
+
 const App = () => {
     const [role, setRole] = useState("");
 
     useEffect(() => {
         const storedRole = localStorage.getItem('role');
-        console.log(typeof role);
         if (storedRole) {
             setRole(storedRole);
         }
-    },[]);
+    }, []);
 
     return (
         <Router>
             <AuthProvider>
-                <div className="app-container" style={{'alignItems':'center'}}>
-                        <HeaderBar />
-                    <div className="content-container">
+                <div className="app-container" style={{ alignItems: 'center' }}>
+                    {role === 'admin' ? <AdminNavBar /> : <NavBar />}
+                    <div className={`content-container ${role === 'admin' ? 'with-sidebar' : ''}`}>
                         {(role === 'admin') && <AdminSideBar />} 
                         <Routes>
                             <Route path="/signup" element={<Signup />} />
                             <Route path="/login" element={<Login />} />
-                            
                             <Route path="/orders" element={<Order />} />
                             <Route path='/products' element={<Products />} />
                             <Route path='/about' element={<About />} />
@@ -67,7 +65,6 @@ const App = () => {
                                 <Route path='/manageexisting' element={<ManageExistingStock />} />
                                 <Route path='/addproduct' element={<AddProduct />} />
                                 <Route path='/manageinv' element={<ManageInventory />} />
-                                <Route path='/sidebar' element={<AdminSideBar /> }/>
                                 <Route path="/admindashboard" element={<AdminDashboard />} />
                                 <Route path="/admin/addProduct" element={<AddProduct />} />
                             </Route>

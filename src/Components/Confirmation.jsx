@@ -14,17 +14,34 @@ const Confirmation = () => {
 
     const fetchOrders = async () => {
         try {
+            
             const token = localStorage.getItem("token");
             const role = localStorage.getItem("role");
             const userId = localStorage.getItem("userId");
-            const response = await axios.post(`http://localhost:5632/cart/`,{userId:userId}, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Role: role
-                }
-            });
-            setTotalPrice(localStorage.getItem("totalPrice"));
-            setOrder(response.data);
+            const pid=localStorage.getItem("pid");
+            if(pid){
+                const response=await axios.post(`http://localhost:5632/home/${pid}`,{userId:userId},
+                    {
+                        headers:{
+                            Authorization: `Bearer ${token}`,
+                            Role: role
+                        }
+                    }
+                )
+                const farr=[];
+                farr.push(response.data.cart);
+                setOrder(farr);
+            }
+            else{
+                const response = await axios.post(`http://localhost:5632/cart/`,{userId:userId}, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Role: role
+                    }
+                });
+                setTotalPrice(localStorage.getItem("totalPrice"));
+                setOrder(response.data);
+            }
         } catch (error) {
             console.error('Error fetching orders:', error);
         }
@@ -32,7 +49,9 @@ const Confirmation = () => {
     const proceedPayment = () => {
         localStorage.setItem("totalPrice", calculateTotalPrice(Number(totalPrice), getGST(Number(totalPrice))).toFixed(2));
         //if(localStorage.getItem("pid")) navigate('/payment2');
-        navigate('/payment');
+        const pid=localStorage.getItem("pid");
+        if(pid) navigate('/payment2')
+        else navigate('/payment');
     };
     if (!order) return <Container className="mt-5 text-center">Loading</Container>;
 
