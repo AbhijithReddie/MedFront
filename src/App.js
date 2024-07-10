@@ -27,21 +27,22 @@ import Confirmation from './Components/Confirmation';
 import PrescriptionUpload from './Components/PrescriptionUpload';
 import ConfirmProd from './Components/ConfirmProd';
 import ProdPrescription from './Components/ProdPrescription';
+import ProductPage from './Components/ProductPage';
 const App = () => {
-    const [role, setRole] = useState("");
+    const [role, setRole] = useState("user");
 
     useEffect(() => {
         const storedRole = localStorage.getItem('role');
         if (storedRole) {
             setRole(storedRole);
         }
-    }, []);
+    },[]);
 
     return (
         <Router>
             <AuthProvider>
                 <div className="app-container" style={{ alignItems: 'center' }}>
-                    {role === 'admin' ? <AdminNavBar /> : <NavBar />}
+                    {localStorage.getItem("role") === 'admin' ? <AdminNavBar /> : <NavBar />}
                     <div className={`content-container ${role === 'admin' ? 'with-sidebar' : ''}`}>
                         {(role === 'admin') && <AdminSideBar />} 
                         <Routes>
@@ -56,6 +57,7 @@ const App = () => {
                             <Route path='/prescription' element={<PrescriptionUpload/>}/>
                             <Route path='/confirmProd' element={<ConfirmProd/>}/>
                             <Route path='/prodPres' element={<ProdPrescription/>}/>
+                            <Route path='prodPage' element={<ProductPage/>}/>
                             <Route element={<UserPrivateRoutes />}>
                                 <Route path='/home' element={<Home />} />
                                 <Route path="/cart" element={<Cart />} />

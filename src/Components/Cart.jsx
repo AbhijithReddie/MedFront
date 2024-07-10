@@ -83,7 +83,7 @@ const Cart = () => {
         }
     };
     const getTotal = () => {
-        return cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+        return cartItems.reduce((total, item) => total + item.pricePerUnit * item.quantity, 0).toFixed(2);
     };
 
     const proceedPayment = () => {

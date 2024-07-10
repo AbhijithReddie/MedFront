@@ -269,7 +269,7 @@ const UserProfile = () => {
                     id="medicalConditionNo"
                     value="no"
                     checked={profileData.medicalCondition === 'no'}
-                    onChange={handleMedicalConditionChange}
+                  onChange={handleMedicalConditionChange}
                     disabled={!isEditing}
                   />
                 </div>
