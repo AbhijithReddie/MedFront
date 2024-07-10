@@ -6,7 +6,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState("");
-  const [role, setRole] = useState(null);
+  const [role, setRole] = useState(localStorage.getItem('role') || null);
   const [user, setUser] = useState(null);
   const [userId, setUserId] = useState(null);
   const navigate = useNavigate();

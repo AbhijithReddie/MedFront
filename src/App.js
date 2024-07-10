@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { AuthProvider } from './Components/AuthContext'; 
+import { AuthProvider ,useAuth} from './Components/AuthContext'; 
 import { Login } from './Components/LoginSignup/Login';
 import { Signup } from './Components/LoginSignup/Signup';
 import { NavBar } from './Components/headerfiles/NavBar'; 
@@ -36,6 +36,20 @@ const App = () => {
             setRole(storedRole);
         }
     }, []);
+    // const { role } = useAuth();
+    // const [currentRole, setCurrentRole] = useState(role);
+
+    // useEffect(() => {
+    //     const storedRole = localStorage.getItem('role');
+    //     if (storedRole) {
+    //         setCurrentRole(storedRole);
+    //     }
+    // }, []);
+
+    // useEffect(() => {
+    //     setCurrentRole(role);
+    // }, [role]);
+
 
     return (
         <Router>
