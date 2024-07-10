@@ -49,7 +49,7 @@ const ProdPrescription = () => {
                     <div className="bg-white p-4 rounded shadow-lg">
                         <h2 className="text-center mb-4 text-gray-800">Prescription Upload</h2>
                         <div className="mb-4">
-                            <h4 className="text-gray-800 mb-3">Cart Items Requiring Prescription:</h4>
+                            <h4 className="text-gray-800 mb-3">This Product Requires Prescription:</h4>
                             {prod === null ? (
                                 <p className="text-gray-600 text-center">No items require prescription.</p>
                             ) : (

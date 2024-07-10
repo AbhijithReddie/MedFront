@@ -55,6 +55,7 @@ export function Payment2() {
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
         minHeight: '100vh',
+        background:'none'
       }}
     >
       <Row className="justify-content-center">

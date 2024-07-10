@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { AuthProvider } from './Components/AuthContext'; 
+import { AuthProvider } from './Components/AuthContext';
 import { Login } from './Components/LoginSignup/Login';
 import { Signup } from './Components/LoginSignup/Signup';
-import { NavBar } from './Components/headerfiles/NavBar'; 
-import { AdminNavBar } from './Components/AdminNavBar'; 
+import { NavBar } from './Components/headerfiles/NavBar';
+import { AdminNavBar } from './Components/AdminNavBar';
 import { UserPrivateRoutes } from './Components/UserPrivateRoutes';
 import { AdminPrivateRoutes } from './Components/AdminPrivateRoutes';
 import { Footer } from './Components/Footer';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Home } from './Components/Home';
 import Cart from './Components/Cart';
-import Order from './Components/Order'
+import Order from './Components/Order';
 import { Payment } from './Components/Payment';
 import { AdminDashboard } from './Components/AdminDashboard';
 import { AddProduct } from './Components/AddProduct';
 import { Products } from './Components/Products';
 import { About } from './Components/About';
-import { AdminSideBar } from './Components/AdminSideNav/AdminSideBar'; 
-import './App.css'; 
+import { AdminSideBar } from './Components/AdminSideNav/AdminSideBar';
+import './App.css';
 import { ManageInventory } from './Components/ManageInventory';
 import { ManageExistingStock } from './Components/ManageExistingStock';
 import { Payment2 } from './Components/Payment2';
@@ -29,7 +29,7 @@ import ConfirmProd from './Components/ConfirmProd';
 import ProdPrescription from './Components/ProdPrescription';
 import ProductPage from './Components/ProductPage';
 const App = () => {
-    const [role, setRole] = useState("user");
+    const [role, setRole] = useState(localStorage.getItem('role') || "");
 
     useEffect(() => {
         const storedRole = localStorage.getItem('role');
@@ -38,13 +38,17 @@ const App = () => {
         }
     },[]);
 
+    const handleRoleChange = (newRole) => {
+        setRole(newRole);
+    };
+
     return (
         <Router>
-            <AuthProvider>
+            <AuthProvider onRoleChange={handleRoleChange}>
                 <div className="app-container" style={{ alignItems: 'center' }}>
                     {localStorage.getItem("role") === 'admin' ? <AdminNavBar /> : <NavBar />}
                     <div className={`content-container ${role === 'admin' ? 'with-sidebar' : ''}`}>
-                        {(role === 'admin') && <AdminSideBar />} 
+                        {role === 'admin' && <AdminSideBar />}
                         <Routes>
                             <Route path="/signup" element={<Signup />} />
                             <Route path="/login" element={<Login />} />
@@ -61,7 +65,7 @@ const App = () => {
                             <Route element={<UserPrivateRoutes />}>
                                 <Route path='/home' element={<Home />} />
                                 <Route path="/cart" element={<Cart />} />
-                                <Route path="/profile" element={<UserProfile/>}/>
+                                <Route path="/profile" element={<UserProfile />} />
                                 <Route path="*" element={<Navigate to="/home" replace />} />
                             </Route>
 
