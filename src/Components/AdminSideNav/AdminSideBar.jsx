@@ -16,7 +16,7 @@ const AdminSideBar = () => {
                     <FaChartArea className="me-3" />
                     Manage Inventory
                 </Nav.Link>
-                <Nav.Link as={NavLink} to="#" className="sidebar-link">
+                <Nav.Link as={NavLink} to="/admin/userOrders" className="sidebar-link">
                     <FaChartBar className="me-3" />
                     Orders
                 </Nav.Link>

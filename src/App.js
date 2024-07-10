@@ -28,6 +28,7 @@ import PrescriptionUpload from './Components/PrescriptionUpload';
 import ConfirmProd from './Components/ConfirmProd';
 import ProdPrescription from './Components/ProdPrescription';
 import ProductPage from './Components/ProductPage';
+import AdminOrders from './Components/AdminOrders';
 const App = () => {
     const [role, setRole] = useState(localStorage.getItem('role') || "");
 
@@ -75,6 +76,7 @@ const App = () => {
                                 <Route path='/manageinv' element={<ManageInventory />} />
                                 <Route path="/admindashboard" element={<AdminDashboard />} />
                                 <Route path="/admin/addProduct" element={<AddProduct />} />
+                                <Route path="/admin/userOrders" element={<AdminOrders />} />
                             </Route>
 
                             <Route path="*" element={<Navigate to="/home" replace />} />
