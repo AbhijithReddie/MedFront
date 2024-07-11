@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, FormControl, Button, Col, Row, Card, ListGroup, Pagination, Placeholder } from 'react-bootstrap';
+import { Form, FormControl, Button, Col, Row, Card, ListGroup, Pagination, Placeholder, Dropdown } from 'react-bootstrap';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -12,6 +12,8 @@ const Products = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(20);
+  const [colorFilter, setColorFilter] = useState('');
+  const [priceRange, setPriceRange] = useState('');
 
   const navigate = useNavigate();
 
@@ -44,8 +46,7 @@ const Products = () => {
     setCurrentPage(1);
   };
 
-  const handleCardClick = (event,productId) => {
-    console.log(event);
+  const handleCardClick = (event, productId) => {
     if (!event.target.closest('button')) {
       localStorage.setItem("pid", productId);
       navigate('/prodPage');
@@ -66,7 +67,8 @@ const Products = () => {
       const response = await axios.post(
         `http://localhost:5632/cart/addtocart/${product._id}`,
         {
-          userId,quantity:1
+          userId,
+          quantity: 1
         },
         {
           headers: {
@@ -95,9 +97,10 @@ const Products = () => {
       navigate('/confirmProd');
     }
   };
+
   const handleEdit = (productId) => {
-    localStorage.setItem("pid",productId);
-    navigate('/manageexisting')
+    localStorage.setItem("pid", productId);
+    navigate('/manageexisting');
   };
 
   if (loading) {
@@ -133,8 +136,19 @@ const Products = () => {
     return <div>Error: {error.message}</div>;
   }
 
+  const filterByPriceRange = (product) => {
+    if (priceRange === '') return true;
+    if (priceRange === '0-50') return product.price >= 0 && product.price <= 50;
+    if (priceRange === '0-100') return product.price >= 0 && product.price <= 100;
+    if (priceRange === '0-150') return product.price >= 0 && product.price <= 150;
+    if (priceRange === '>150') return product.price > 150;
+    return true;
+  };
+
   const filteredProducts = prods.filter((product) =>
-    product.productName.toLowerCase().includes(searchQuery.toLowerCase())
+    product.productName.toLowerCase().includes(searchQuery.toLowerCase()) &&
+    (colorFilter === '' || product.category.toLowerCase() === colorFilter.toLowerCase()) &&
+    filterByPriceRange(product)
   );
 
   const indexOfLastProduct = currentPage * productsPerPage;
@@ -145,20 +159,20 @@ const Products = () => {
 
   const productCards = currentProducts.map((product, index) => (
     <Col key={index} md={3} className="mb-4">
-      <Card style={{ height: '100%' }} onClick={(e) => handleCardClick(e,product._id)}>
-        <Card.Img variant="top" src={product.imageUrl} style={{ height: '150px', objectFit: 'contain' }} />
-        <Card.Body style={{ display: 'flex', flexDirection: 'column' }}>
+      <Card className="h-full cursor-pointer" onClick={(e) => handleCardClick(e, product._id)}>
+        <Card.Img variant="top" src={product.imageUrl} className="h-36 object-contain" />
+        <Card.Body className="flex flex-col">
           <Card.Title>{product.productName}</Card.Title>
-          <Card.Text style={product.quantity > 0 ? { color: 'green' } : { color: 'red' }}>
+          <Card.Text className={product.quantity > 0 ? 'text-green-500' : 'text-red-500'}>
             {product.quantity > 0 ? 'Available' : 'Out of Stock'}
           </Card.Text>
         </Card.Body>
         <ListGroup className="list-group-flush">
           <ListGroup.Item>Price: ₹{product.price.toFixed(2)}</ListGroup.Item>
-          {localStorage.getItem("role")==='admin' && (<ListGroup.Item>Quantity: {product.quantity}</ListGroup.Item>)}
+          {localStorage.getItem("role") === 'admin' && (<ListGroup.Item>Quantity: {product.quantity}</ListGroup.Item>)}
         </ListGroup>
-        <Card.Body style={{ display: 'flex', justifyContent: 'space-between' }}>
-          {role === 'user' ? (
+        <Card.Body className="flex justify-between">
+          {role !== 'admin' ? (
             <>
               <Button variant="primary" onClick={() => handleAddToCart(product)}>Add to Cart</Button>
               <Button variant="success" onClick={() => handleBuyNow(product)}>Buy Now</Button>
@@ -187,23 +201,49 @@ const Products = () => {
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
   return (
-    <div>
+    <div className="container mx-auto px-4 py-8">
       <ToastContainer />
-      <div className="text-center my-4">
-        <Form inline>
-          <Col md={6} className="mx-auto d-flex">
-            <FormControl
-              type="text"
-              placeholder="Search"
-              className="mr-2 flex-grow-1"
-              value={searchQuery}
-              onChange={handleSearch}
-            />
-            <Button variant="danger">Search</Button>
-          </Col>
+      <div className="flex justify-between items-center mb-4">
+        <Dropdown className="filter-dropdown">
+          <Dropdown.Toggle id="dropdown-basic" className="bg-gray-200 text-purple-700 border-white">
+            Filters
+          </Dropdown.Toggle>
+          <Dropdown.Menu className="p-2">
+            <Form.Group controlId="colorFilter">
+              <Form.Label>Category</Form.Label>
+              <Form.Control as="select" value={colorFilter} onChange={(e) => setColorFilter(e.target.value)}>
+                <option value="">All</option>
+                <option value="Capsule">Capsule</option>
+                <option value="Syrup">Syrup</option>
+                <option value="Others">Others</option>
+              </Form.Control>
+            </Form.Group>
+            <Form.Group controlId="priceRange" className="mt-3">
+              <Form.Label>Price Range</Form.Label>
+              <Form.Control as="select" value={priceRange} onChange={(e) => setPriceRange(e.target.value)}>
+                <option value="">All</option>
+                <option value="0-50">₹0 - ₹50</option>
+                <option value="0-100">₹0 - ₹100</option>
+                <option value="0-150">₹0 - ₹150</option>
+                <option value=">150">₹150+</option>
+              </Form.Control>
+            </Form.Group>
+          </Dropdown.Menu>
+        </Dropdown>
+        <Form inline className="search-form flex">
+          <FormControl
+            type="text"
+            placeholder="Search"
+            className="mr-2 flex-grow w-64"
+            value={searchQuery}
+            onChange={handleSearch}
+          />
+          <Button variant="danger">Search</Button>
         </Form>
       </div>
-      {rows}
+      <div>
+        {rows}
+      </div>
       <Pagination className="justify-content-center mt-4">
         <Pagination.First onClick={() => setCurrentPage(1)} disabled={currentPage === 1} />
         <Pagination.Prev onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1} />

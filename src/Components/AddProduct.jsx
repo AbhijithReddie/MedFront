@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, FormControl, Button, Col, Row, Card, InputGroup } from 'react-bootstrap';
+import { Form, Button, Col, Row, Card, Dropdown } from 'react-bootstrap';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -14,6 +14,7 @@ const AddProduct = () => {
     const [quantity, setQuantity] = useState(0);
     const [imageUrl, setImageUrl] = useState('');
     const [description, setDescription] = useState('');
+    const [category, setCategory] = useState('');
 
     const handleSubmit = async () => {
         const newProduct = {
@@ -24,8 +25,9 @@ const AddProduct = () => {
             quantity,
             imageUrl,
             description,
+            category,
         };
-        console.log(newProduct)
+
         try {
             const response = await axios.post('http://localhost:5632/admin/addProduct', newProduct, {
                 headers: {
@@ -49,6 +51,7 @@ const AddProduct = () => {
         setQuantity(0);
         setImageUrl('');
         setDescription('');
+        setCategory('');
     };
 
     return (
@@ -123,6 +126,19 @@ const AddProduct = () => {
                                     value={imageUrl}
                                     onChange={(e) => setImageUrl(e.target.value)}
                                 />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Category</Form.Label>
+                                <Dropdown>
+                                    <Dropdown.Toggle variant="secondary" id="dropdown-basic">
+                                        {category || "Select Category"}
+                                    </Dropdown.Toggle>
+                                    <Dropdown.Menu>
+                                        <Dropdown.Item onClick={() => setCategory('Syrup')}>Syrup</Dropdown.Item>
+                                        <Dropdown.Item onClick={() => setCategory('Capsule')}>Capsule</Dropdown.Item>
+                                        <Dropdown.Item onClick={() => setCategory('Others')}>Others</Dropdown.Item>
+                                    </Dropdown.Menu>
+                                </Dropdown>
                             </Form.Group>
                             <div className="d-flex justify-content-between">
                                 <Button variant="primary" onClick={handleSubmit}>Submit</Button>
