@@ -67,13 +67,18 @@ const ProductPage = () => {
         const token = localStorage.getItem('token');
         const role = localStorage.getItem('role');
         const userId = localStorage.getItem('userId');
-        await axios.post(`http://localhost:5632/cart/increment/${id}`, { userId: userId }, {
+        const res=await axios.post(`http://localhost:5632/cart/increment/${id}`, { userId: userId }, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 Role: role,
             },
         });
-        setQuantity(prevQuantity => prevQuantity + 1);
+        if(res.data.status==false){
+          toast.error('Sorry Product is Out Of Stock');
+        }
+        else{ 
+          setQuantity(prevQuantity => prevQuantity + 1);
+        }
     } catch (e) {
         console.log(e);
     }
