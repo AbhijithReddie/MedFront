@@ -8,6 +8,7 @@ import 'tailwindcss/tailwind.css';
 const ProductPage = () => {
   const [prod, setProd] = useState({});
   const [quantity, setQuantity] = useState(0);
+  const [isCartClicked,setIsCartClicked]=useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -52,7 +53,8 @@ const ProductPage = () => {
         toast.error('Sorry Product is Out Of Stock');
       } else {
         toast.success('Item added to cart successfully!');
-        setQuantity(1); // Set the initial quantity to 1 when added to cart
+        setQuantity(1);
+        setIsCartClicked(true); // Set the initial quantity to 1 when added to cart
       }
     } catch (error) {
       console.error('Error adding to cart:', error);
@@ -96,8 +98,8 @@ const ProductPage = () => {
               setQuantity(0);
               return 0;
             }
-            
-        });
+          });
+          if(quantity==0) setIsCartClicked(false);
     } catch (e) {
         console.log(e);
     }
@@ -105,7 +107,8 @@ const ProductPage = () => {
 
   const handleBuyItem = (product) => {
     localStorage.setItem("pid", product._id);
-    localStorage.setItem("totalPrice", product.price * quantity);
+    
+    localStorage.setItem("totalPrice", product.price);
     if (product.prescriptionRequired) {
       navigate('/prodPres');
     } else {
@@ -141,7 +144,7 @@ const ProductPage = () => {
               <Badge bg="danger" className="ml-2">Not Available</Badge>
             )}
           </p>
-          {quantity > 0 ? (
+          {isCartClicked && quantity>0 ? (
             <>
               <div className="flex items-center space-x-3 mb-4">
                 <ButtonGroup>
