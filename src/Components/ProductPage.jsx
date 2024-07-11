@@ -9,6 +9,7 @@ const ProductPage = () => {
   const [prod, setProd] = useState({});
   const [quantity, setQuantity] = useState(0);
   const [isCartClicked,setIsCartClicked]=useState(false);
+  const [userRole,setUserRole]=useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,6 +18,7 @@ const ProductPage = () => {
 
   const fetchProd = async () => {
     try {
+      setUserRole(localStorage.getItem("role"));
       const pid = localStorage.getItem('pid');
       const res = await axios.post(`http://localhost:5632/home/getProd/${pid}`);
       setProd(res.data);
@@ -73,7 +75,7 @@ const ProductPage = () => {
                 Role: role,
             },
         });
-        if(res.data.status==false){
+        if(res.data.status===false){
           toast.error('Sorry Product is Out Of Stock');
         }
         else{ 
@@ -104,7 +106,7 @@ const ProductPage = () => {
               return 0;
             }
           });
-          if(quantity==0) setIsCartClicked(false);
+          if(quantity===0) setIsCartClicked(false);
     } catch (e) {
         console.log(e);
     }
@@ -119,6 +121,11 @@ const ProductPage = () => {
     } else {
       navigate('/confirmProd');
     }
+  };
+
+  const handleEdit = (productId) => {
+    localStorage.setItem("pid",productId);
+    navigate('/manageexisting')
   };
 
   const handleBackClick = () => {
@@ -140,31 +147,41 @@ const ProductPage = () => {
           <p className="mb-2"><strong>Product ID:</strong> {prod.productId}</p>
           <p className="mb-2"><strong>Description:</strong> {prod.description}</p>
           <p className="mb-2"><strong>Price:</strong> ₹{(prod.price)}</p>
+          {userRole==='admin' && (<p className="mb-2"><strong>Quantity:</strong> {(prod.quantity)}</p>)}
           <p className="mb-2"><strong>Prescription Required:</strong> {prod.prescriptionRequired ? 'Yes' : 'No'}</p>
           <p className="mb-4">
             <strong>Availability:</strong>
-            {prod.checkAvailable === 'Availble' ? (
+            {prod.quantity >0 ? (
               <Badge bg="success" className="ml-2">Available</Badge>
             ) : (
               <Badge bg="danger" className="ml-2">Not Available</Badge>
             )}
           </p>
-          {isCartClicked && quantity>0 ? (
-            <>
-              <div className="flex items-center space-x-3 mb-4">
-                <ButtonGroup>
-                  <Button variant="outline-secondary" onClick={()=>handleDecrement(prod._id)}>-</Button>
-                  <Button variant="outline-secondary" disabled>{quantity}</Button>
-                  <Button variant="outline-secondary" onClick={()=>handleIncrement(prod._id)}>+</Button>
-                </ButtonGroup>
-              </div>
-              <Button variant="primary" onClick={handleBackClick} className="mt-2">Go Back to Products</Button>
-            </>
-          ) : (
-            <div className="flex space-x-3">
-              <Button variant="primary" disabled={prod.checkAvailable !== 'Availble'} onClick={() => handleAddToCart(prod)}>Add to Cart</Button>
-              <Button variant="success" disabled={prod.checkAvailable !== 'Availble'} onClick={() => handleBuyItem(prod)}>Buy Now</Button>
+          {userRole === 'admin' ? (
+            <div className="mb-3">
+              <Button variant="info" onClick={() => handleEdit(prod._id)}>Edit</Button>{' '}
+              <Button variant="danger" onClick={() => handleEdit(prod._id)}>Remove</Button>
             </div>
+          ) : (
+            <>
+              {isCartClicked && quantity > 0 ? (
+                <div className="flex items-center space-x-3 mb-4">
+                  <ButtonGroup>
+                    <Button variant="outline-secondary" onClick={() => handleDecrement(prod._id)}>-</Button>
+                    <Button variant="outline-secondary" disabled>{quantity}</Button>
+                    <Button variant="outline-secondary" onClick={() => handleIncrement(prod._id)}>+</Button>
+                  </ButtonGroup>
+                </div>
+              ) : (
+                <div className="flex space-x-3">
+                  <Button variant="primary" disabled={prod.quantity === 0} onClick={() => handleAddToCart(prod)}>Add to Cart</Button>
+                  <Button variant="success" disabled={prod.quantity === 0} onClick={() => handleBuyItem(prod)}>Buy Now</Button>
+                </div>
+              )}
+            </>
+          )}
+          {isCartClicked && quantity > 0 && (
+            <Button variant="primary" onClick={handleBackClick} className="mt-2">Go Back to Products</Button>
           )}
         </Col>
       </Row>

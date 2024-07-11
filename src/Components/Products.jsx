@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, FormControl, Button, Col, Row, Card, ListGroup, Pagination, Placeholder } from 'react-bootstrap';
 import axios from 'axios';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,13 +13,13 @@ const Products = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(20);
 
-  const navigate=useNavigate();
+  const navigate = useNavigate();
 
   const fetchProducts = async () => {
     try {
       const token = localStorage.getItem('token');
       const role = localStorage.getItem('role');
-      const response = await axios.post('http://localhost:5632/home', {
+      const response = await axios.post('http://localhost:5632/home', {}, {
         headers: {
           Authorization: `Bearer ${token}`,
           Role: role,
@@ -43,15 +43,67 @@ const Products = () => {
     setSearchQuery(event.target.value);
     setCurrentPage(1);
   };
-  const handleCardClick = (productId) => {
+
+  const handleCardClick = (event,productId) => {
+    console.log(event);
+    if (!event.target.closest('button')) {
+      localStorage.setItem("pid", productId);
+      navigate('/prodPage');
+    }
+  };
+
+  const handleAddToCart = async (product) => {
+    const userId = localStorage.getItem('userId');
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+
+    if (!userId) {
+      toast.error('You must be logged in to add items to the cart');
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `http://localhost:5632/cart/addtocart/${product._id}`,
+        {
+          userId,quantity:1
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Role: role,
+          },
+        }
+      );
+      if (response.data.status === false) {
+        toast.error('Sorry Product is Out Of Stock');
+      } else {
+        toast.success('Item added to cart successfully!');
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      toast.error('Error adding to cart. Please try again.');
+    }
+  };
+
+  const handleBuyNow = (product) => {
+    localStorage.setItem("pid", product._id);
+    localStorage.setItem("totalPrice", product.price);
+    if (product.prescriptionRequired) {
+      navigate('/prodPres');
+    } else {
+      navigate('/confirmProd');
+    }
+  };
+  const handleEdit = (productId) => {
     localStorage.setItem("pid",productId);
-    navigate('/prodPage');
+    navigate('/manageexisting')
   };
 
   if (loading) {
     const placeholders = Array.from({ length: 4 }).map((_, index) => (
       <Col key={index} md={3} className="mb-4">
-        <Card style={{ height: '100%' }} >
+        <Card style={{ height: '100%' }}>
           <div style={{ height: '150px', objectFit: 'contain', backgroundColor: '#e9ecef' }}></div>
           <Card.Body style={{ display: 'flex', flexDirection: 'column' }}>
             <Placeholder as={Card.Title} animation="glow">
@@ -89,19 +141,35 @@ const Products = () => {
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
 
+  const role = localStorage.getItem('role');
+
   const productCards = currentProducts.map((product, index) => (
     <Col key={index} md={3} className="mb-4">
-      <Card style={{ height: '100%' }} onClick={() => handleCardClick(product._id)}>
+      <Card style={{ height: '100%' }} onClick={(e) => handleCardClick(e,product._id)}>
         <Card.Img variant="top" src={product.imageUrl} style={{ height: '150px', objectFit: 'contain' }} />
         <Card.Body style={{ display: 'flex', flexDirection: 'column' }}>
           <Card.Title>{product.productName}</Card.Title>
-          <Card.Text style={product.quantity > 0 ? {color:'green'} :{color:'red'}}>
+          <Card.Text style={product.quantity > 0 ? { color: 'green' } : { color: 'red' }}>
             {product.quantity > 0 ? 'Available' : 'Out of Stock'}
           </Card.Text>
         </Card.Body>
         <ListGroup className="list-group-flush">
           <ListGroup.Item>Price: ₹{product.price.toFixed(2)}</ListGroup.Item>
+          {localStorage.getItem("role")==='admin' && (<ListGroup.Item>Quantity: {product.quantity}</ListGroup.Item>)}
         </ListGroup>
+        <Card.Body style={{ display: 'flex', justifyContent: 'space-between' }}>
+          {role === 'user' ? (
+            <>
+              <Button variant="primary" onClick={() => handleAddToCart(product)}>Add to Cart</Button>
+              <Button variant="success" onClick={() => handleBuyNow(product)}>Buy Now</Button>
+            </>
+          ) : (
+            <>
+              <Button variant="warning" onClick={() => handleEdit(product._id)}>Edit</Button>
+              <Button variant="danger" onClick={() => handleEdit(product._id)}>Remove</Button>
+            </>
+          )}
+        </Card.Body>
       </Card>
     </Col>
   ));
