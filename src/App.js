@@ -51,6 +51,7 @@ const App = () => {
                     <div className={`content-container ${role === 'admin' ? 'with-sidebar' : ''}`}>
                         {role === 'admin' && <AdminSideBar />}
                         <Routes>
+                            <Route path="/home" element={<Home/>}/>
                             <Route path="/signup" element={<Signup />} />
                             <Route path="/login" element={<Login />} />
                             <Route path="/orders" element={<Order />} />

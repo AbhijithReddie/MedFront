@@ -22,7 +22,7 @@ export const Login = () => {
       navigate(redirectLink);
     } catch (error) {
       console.error("There was an error logging in!", error);
-      setErrorMessage('Internal Server Error');
+      setErrorMessage('Incorrect credentials');
     }
   };
 
@@ -72,7 +72,7 @@ export const Login = () => {
                 checked={formData.role === 'user'}
                 onChange={handleChange} 
               />
-              User
+              Customer
             </label>
             <label htmlFor='btn2'>
               <input 

@@ -10,7 +10,7 @@ const AdminSideBar = () => {
             <Nav className="flex-column">
                 <Nav.Link as={NavLink} to="/admindashboard" className="sidebar-link">
                     <FaTachometerAlt className="me-3" />
-                    Dashboard
+                    Home
                 </Nav.Link>
                 <Nav.Link as={NavLink} to="/manageinv" className="sidebar-link">
                     <FaChartArea className="me-3" />
@@ -28,13 +28,15 @@ const AdminSideBar = () => {
                     <FaChartLine className="me-3" />
                     Analytics & Reports
                 </Nav.Link>
-                <Nav.Link as={NavLink} to="/admin/settings" className="sidebar-link" >
-                    <FaCog className="me-3" />
-                    Settings
-                </Nav.Link>
+                
                 <Nav.Link as={NavLink} to="/admin/customerFeedback" className="sidebar-link">
                     <FaUser className="me-3" />
                     Customer Feedback
+                </Nav.Link>
+
+                <Nav.Link as={NavLink} to="/admin/settings" className="sidebar-link" >
+                    <FaCog className="me-3" />
+                    Logout
                 </Nav.Link>
             </Nav>
         </div>

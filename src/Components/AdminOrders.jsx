@@ -33,12 +33,12 @@ const AdminOrders = () => {
                   <Card.Body className="p-4 flex flex-col">
                     <Card.Title className="text-xl font-weight-bold text-indigo-600">Order ID: {order.orderId}</Card.Title>
                     <Card.Text className="text-lg mb-2 flex items-center">
-                      <span className="text-gray-800 font-weight-bold mr-2">Total Price:</span> ${order.totalPrice.toFixed(2)}
+                      <span className="text-gray-800 font-weight-bold mr-2">Total Price:</span> ₹{order.totalPrice.toFixed(2)}
                     </Card.Text>
                     <ul className="list-disc list-inside text-gray-700 mb-4">
                       {order.items.map((item, index) => (
                         <li key={index} className="text-sm flex items-center">
-                          <span className="font-medium font-weight-bold mr-2">{item.productName}</span> - Quantity: {item.quantity} - Price: $
+                          <span className="font-medium font-weight-bold mr-2">{item.productName}</span> - Quantity: {item.quantity} - Price: ₹
                           {item.price.toFixed(2)}
                         </li>
                       ))}

@@ -28,7 +28,7 @@ const AdminNavBar = () => {
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
-                        <Link to="/" className="nav-link fs-4 me-2 text-white">Home</Link>
+                        <Link to="/home" className="nav-link fs-4 me-2 text-white">Home</Link>
                         <Link to="/products" className="nav-link fs-4 me-2 text-white">Products</Link>
                         <Link to="/about" className="nav-link fs-4 me-2 text-white">About</Link>
                         {/* Style Manage Inventory button similarly to other links */}
