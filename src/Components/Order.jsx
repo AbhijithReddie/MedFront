@@ -20,7 +20,12 @@ const Order = () => {
                     Role: role
                 }
             });
-            setOrders(response.data.order);
+            const formattedOrders = response.data.order.map(order => ({
+                ...order,
+                placedDate: new Date(order.placedDate).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }), // Example: DD-MM-YYYY HH:MM:SS format
+                expectedDate: order.expectedDate // Assuming expectedDate is already in a readable format
+            }));
+            setOrders(formattedOrders);
         } catch (error) {
             console.error('Error fetching orders:', error);
         }
@@ -50,6 +55,8 @@ const Order = () => {
                         ))}
                     </Row>
                     <h3 className="text-xl font-semibold mt-6 text-purple-700">Total Price: ₹{order.totalPrice}</h3>
+                    <p className="text-xl font-semibold mt-6 text-black-700">Placed Date: {order.placedDate}</p>
+                    <p className="text-xl font-semibold mt-6 text-black-700">Expected Date: {order.expectedDate}</p>
                 </div>
             </div>
         ))}

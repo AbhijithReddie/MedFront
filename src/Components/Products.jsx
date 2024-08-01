@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Form, FormControl, Button, Col, Row, Card, ListGroup, Pagination, Placeholder, Dropdown, DropdownButton, ButtonGroup, FormCheck } from 'react-bootstrap';
+import { Form, FormControl, Button, Col, Row, Card, ListGroup, Pagination, Placeholder } from 'react-bootstrap';
 import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,8 +12,6 @@ const Products = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(20);
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [prescriptionFilter, setPrescriptionFilter] = useState(false);
 
   const navigate = useNavigate();
 
@@ -21,7 +19,7 @@ const Products = () => {
     try {
       const token = localStorage.getItem('token');
       const role = localStorage.getItem('role');
-      const response = await axios.post('http://localhost:5632/home', {
+      const response = await axios.post('http://localhost:5632/home', {}, {
         headers: {
           Authorization: `Bearer ${token}`,
           Role: role,
@@ -45,9 +43,8 @@ const Products = () => {
     setSearchQuery(event.target.value);
     setCurrentPage(1);
   };
-
   const handleCardClick = (productId) => {
-    localStorage.setItem("pid", productId);
+    localStorage.setItem("pid",productId);
     navigate('/prodPage');
   };
 
@@ -115,30 +112,52 @@ const Products = () => {
     return <div>Error: {error}</div>;
   }
 
-  const filteredProducts = prods
-    .filter((product) =>
-      product.productName.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      (selectedCategories.length === 0 || selectedCategories.some((cat) => product.categories.includes(cat))) &&
-      (!prescriptionFilter || !product.requiresPrescription)
-    );
+  const filterByPriceRange = (product) => {
+    if (priceRange === '') return true;
+    if (priceRange === '0-50') return product.price >= 0 && product.price <= 50;
+    if (priceRange === '0-100') return product.price >= 0 && product.price <= 100;
+    if (priceRange === '0-150') return product.price >= 0 && product.price <= 150;
+    if (priceRange === '>150') return product.price > 150;
+    return true;
+  };
+
+  const filteredProducts = prods.filter((product) =>
+    product.productName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
 
+  const role = localStorage.getItem('role');
+
   const productCards = currentProducts.map((product, index) => (
     <Col key={index} md={3} className="mb-4">
-      <Card style={{ height: '100%' }} onClick={() => handleCardClick(product._id)}>
-        <Card.Img variant="top" src={product.imageUrl} style={{ height: '150px', objectFit: 'contain' }} />
-        <Card.Body style={{ display: 'flex', flexDirection: 'column' }}>
+      <Card className="h-full cursor-pointer" onClick={(e) => handleCardClick(e, product._id)}>
+        <Card.Img variant="top" src={product.imageUrl} className="h-36 object-contain" />
+        <Card.Body className="flex flex-col">
           <Card.Title>{product.productName}</Card.Title>
-          <Card.Text style={product.quantity > 0 ? { color: 'green' } : { color: 'red' }}>
+          <Card.Text style={product.quantity > 0 ? {color:'green'} :{color:'red'}}>
             {product.quantity > 0 ? 'Available' : 'Out of Stock'}
           </Card.Text>
         </Card.Body>
         <ListGroup className="list-group-flush">
           <ListGroup.Item>Price: ₹{product.price.toFixed(2)}</ListGroup.Item>
+          {localStorage.getItem("role") === 'admin' && (<ListGroup.Item>Quantity: {product.quantity}</ListGroup.Item>)}
         </ListGroup>
+        <Card.Body className="flex justify-between">
+          {role !== 'admin' ? (
+            <>
+              <Button variant="primary" onClick={() => handleAddToCart(product)}>Add to Cart</Button>
+              <Button variant="success" onClick={() => handleBuyNow(product)}>Buy Now</Button>
+            </>
+          ) : (
+            <>
+              <Button variant="warning" onClick={() => handleEdit(product._id)}>Edit</Button>
+              <Button variant="danger" onClick={() => handleEdit(product._id)}>Remove</Button>
+            </>
+          )}
+        </Card.Body>
       </Card>
     </Col>
   ));
@@ -156,59 +175,34 @@ const Products = () => {
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
   return (
-    <div>
+    <div className="container mx-auto px-4 py-8">
       <ToastContainer />
-      <div className="navbar p-4" style={{ backgroundColor: 'transparent', display: 'flex', alignItems: 'center' }}>
-        <DropdownButton id="dropdown-sort" title="Sort by" className="mr-2" style={{ border: 'none', fontWeight: 'bold' }}>
-          <Dropdown.Item onClick={() => handleSort('lowToHigh')}>Cost - Low to High</Dropdown.Item>
-          <Dropdown.Item onClick={() => handleSort('highToLow')}>Cost - High to Low</Dropdown.Item>
-          <Dropdown.Item onClick={() => handleSort('popularity')}>Popularity</Dropdown.Item>
-        </DropdownButton>
-        <ButtonGroup className="mr-2">
-          <Button style={{ backgroundColor: 'transparent', border: 'none', fontWeight: 'bold' }} onClick={() => handleCategorySelect('Pain Relief')}>Pain Relief</Button>
-          <Button style={{ backgroundColor: 'transparent', border: 'none', fontWeight: 'bold' }} onClick={() => handleCategorySelect('Cold & Flu')}>Cold & Flu</Button>
-          <Button style={{ backgroundColor: 'transparent', border: 'none', fontWeight: 'bold' }} onClick={() => handleCategorySelect('Skin Care')}>Skin Care</Button>
-          <Button style={{ backgroundColor: 'transparent', border: 'none', fontWeight: 'bold' }} onClick={() => handleCategorySelect('Digestive Health')}>Digestive Health</Button>
-          <Button style={{ backgroundColor: 'transparent', border: 'none', fontWeight: 'bold' }} onClick={() => handleCategorySelect('Vitamins & Supplements')}>Vitamins & Supplements</Button>
-          <Button style={{ backgroundColor: 'transparent', border: 'none', fontWeight: 'bold' }} onClick={() => handleCategorySelect('First Aid')}>First Aid</Button>
-          <Button style={{ backgroundColor: 'transparent', border: 'none', fontWeight: 'bold' }} onClick={() => handleCategorySelect('Dental Care')}>Dental Care</Button>
-          <Button style={{ backgroundColor: 'transparent', border: 'none', fontWeight: 'bold' }} onClick={() => handleCategorySelect('Eye Care')}>Eye Care</Button>
-          <Button style={{ backgroundColor: 'transparent', border: 'none', fontWeight: 'bold' }} onClick={() => handleCategorySelect("Women's Health")}>Women's Health</Button>
-          <Button style={{ backgroundColor: 'transparent', border: 'none', fontWeight: 'bold' }} onClick={() => handleCategorySelect('General Wellness')}>General Wellness</Button>
-        </ButtonGroup>
-        <FormCheck
-          type="checkbox"
-          label={<span style={{ fontWeight: 'bold' }}>Prescription not required</span>}
-          checked={prescriptionFilter}
-          onChange={handlePrescriptionFilter}
-        />
+      <div className="text-center my-4">
+        <Form inline>
+          <Col md={6} className="mx-auto d-flex">
+            <FormControl
+              type="text"
+              placeholder="Search"
+              className="mr-2 flex-grow-1"
+              value={searchQuery}
+              onChange={handleSearch}
+            />
+            <Button variant="danger">Search</Button>
+          </Col>
+        </Form>
       </div>
-      <div className="content p-4">
-        <div className="text-center my-4">
-          <Form className="d-flex justify-content-center">
-            <Col md={6} className="mx-auto d-flex">
-              <FormControl
-                type="text"
-                placeholder="Search"
-                className="mr-2 flex-grow-1"
-                value={searchQuery}
-                onChange={handleSearch}
-              />
-              <Button variant="danger">Search</Button>
-            </Col>
-          </Form>
-        </div>
-        {rows}
-        <Pagination className="justify-content-center mt-4">
-          <Pagination.Prev onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : 1)} />
-          {Array.from({ length: totalPages }).map((_, index) => (
-            <Pagination.Item key={index} active={index + 1 === currentPage} onClick={() => setCurrentPage(index + 1)}>
-              {index + 1}
-            </Pagination.Item>
-          ))}
-          <Pagination.Next onClick={() => setCurrentPage(currentPage < totalPages ? currentPage + 1 : totalPages)} />
-        </Pagination>
-      </div>
+      {rows}
+      <Pagination className="justify-content-center mt-4">
+        <Pagination.First onClick={() => setCurrentPage(1)} disabled={currentPage === 1} />
+        <Pagination.Prev onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1} />
+        {[...Array(totalPages).keys()].map(number => (
+          <Pagination.Item key={number + 1} active={number + 1 === currentPage} onClick={() => setCurrentPage(number + 1)}>
+            {number + 1}
+          </Pagination.Item>
+        ))}
+        <Pagination.Next onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages} />
+        <Pagination.Last onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} />
+      </Pagination>
     </div>
   );
 };
