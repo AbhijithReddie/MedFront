@@ -29,14 +29,13 @@ import ConfirmProd from './Components/ConfirmProd';
 import ProdPrescription from './Components/ProdPrescription';
 import ProductPage from './Components/ProductPage';
 import AdminOrders from './Components/AdminOrders';
+import ForgotPassword from './Components/ForgotPassword';
 const App = () => {
     const [role, setRole] = useState(localStorage.getItem('role') || "");
 
     useEffect(() => {
         const storedRole = localStorage.getItem('role');
-        if (storedRole) {
-            setRole(storedRole);
-        }
+        setRole(storedRole);
     },[]);
 
     const handleRoleChange = (newRole) => {
@@ -54,6 +53,7 @@ const App = () => {
                             <Route path="/home" element={<Home/>}/>
                             <Route path="/signup" element={<Signup />} />
                             <Route path="/login" element={<Login />} />
+                            <Route path="/forgotpass" element={<ForgotPassword />} />
                             <Route path="/orders" element={<Order />} />
                             <Route path='/products' element={<Products />} />
                             <Route path='/about' element={<About />} />

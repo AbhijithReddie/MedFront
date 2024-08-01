@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Form, FormControl, Button, Col, Row, Card, ListGroup, Pagination, Placeholder } from 'react-bootstrap';
+import { Form, FormControl, Button, Col, Row, Card, ListGroup, Pagination, Placeholder, Dropdown } from 'react-bootstrap';
 import axios from 'axios';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,6 +12,8 @@ const Products = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(20);
+  const [colorFilter, setColorFilter] = useState('');
+  const [priceRange, setPriceRange] = useState('');
 
   const navigate = useNavigate();
 
@@ -30,7 +32,7 @@ const Products = () => {
       setLoading(false);
     } catch (error) {
       console.error('Error fetching product data:', error);
-      setError('Error fetching product data. Please try again later.'); // Set a meaningful error message
+      setError(error);
       setLoading(false);
     }
   };
@@ -43,40 +45,62 @@ const Products = () => {
     setSearchQuery(event.target.value);
     setCurrentPage(1);
   };
-  const handleCardClick = (productId) => {
-    localStorage.setItem("pid",productId);
-    navigate('/prodPage');
-  };
 
-  const handleSort = (sortType) => {
-    let sortedProds = [];
-    switch (sortType) {
-      case 'lowToHigh':
-        sortedProds = [...prods].sort((a, b) => a.price - b.price);
-        break;
-      case 'highToLow':
-        sortedProds = [...prods].sort((a, b) => b.price - a.price);
-        break;
-      case 'popularity':
-        sortedProds = [...prods].sort((a, b) => b.popularity - a.popularity);
-        break;
-      default:
-        break;
+  const handleCardClick = (event, productId) => {
+    if (!event.target.closest('button')) {
+      localStorage.setItem("pid", productId);
+      navigate('/prodPage');
     }
-    setProds(sortedProds);
   };
 
-  const handleCategorySelect = (category) => {
-    const updatedCategories = selectedCategories.includes(category)
-      ? selectedCategories.filter((cat) => cat !== category)
-      : [...selectedCategories, category];
+  const handleAddToCart = async (product) => {
+    const userId = localStorage.getItem('userId');
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
 
-    setSelectedCategories(updatedCategories);
-    setCurrentPage(1);
+    if (!userId) {
+      toast.error('You must be logged in to add items to the cart');
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `http://localhost:5632/cart/addtocart/${product._id}`,
+        {
+          userId,
+          quantity: 1
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Role: role,
+          },
+        }
+      );
+      if (response.data.status === false) {
+        toast.error('Sorry Product is Out Of Stock');
+      } else {
+        toast.success('Item added to cart successfully!');
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      toast.error('Error adding to cart. Please try again.');
+    }
   };
 
-  const handlePrescriptionFilter = (event) => {
-    setPrescriptionFilter(event.target.checked);
+  const handleBuyNow = (product) => {
+    localStorage.setItem("pid", product._id);
+    localStorage.setItem("totalPrice", product.price);
+    if (product.prescriptionRequired) {
+      navigate('/prodPres');
+    } else {
+      navigate('/confirmProd');
+    }
+  };
+
+  const handleEdit = (productId) => {
+    localStorage.setItem("pid", productId);
+    navigate('/manageexisting');
   };
 
   if (loading) {
@@ -109,7 +133,7 @@ const Products = () => {
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div>Error: {error.message}</div>;
   }
 
   const filterByPriceRange = (product) => {
@@ -122,7 +146,9 @@ const Products = () => {
   };
 
   const filteredProducts = prods.filter((product) =>
-    product.productName.toLowerCase().includes(searchQuery.toLowerCase())
+    product.productName.toLowerCase().includes(searchQuery.toLowerCase()) &&
+    (colorFilter === '' || product.category.toLowerCase() === colorFilter.toLowerCase()) &&
+    filterByPriceRange(product)
   );
 
   const indexOfLastProduct = currentPage * productsPerPage;
@@ -135,9 +161,9 @@ const Products = () => {
     <Col key={index} md={3} className="mb-4">
       <Card className="h-full cursor-pointer" onClick={(e) => handleCardClick(e, product._id)}>
         <Card.Img variant="top" src={product.imageUrl} className="h-36 object-contain" />
-        <Card.Body className="flex flex-col">
+        <Card.Body className="flex flex-col" style={{height:'150px'}}>
           <Card.Title>{product.productName}</Card.Title>
-          <Card.Text style={product.quantity > 0 ? {color:'green'} :{color:'red'}}>
+          <Card.Text className={product.quantity > 0 ? 'text-green-500' : 'text-red-500'}>
             {product.quantity > 0 ? 'Available' : 'Out of Stock'}
           </Card.Text>
         </Card.Body>
@@ -148,8 +174,8 @@ const Products = () => {
         <Card.Body className="flex justify-between">
           {role !== 'admin' ? (
             <>
-              <Button variant="primary" onClick={() => handleAddToCart(product)}>Add to Cart</Button>
-              <Button variant="success" onClick={() => handleBuyNow(product)}>Buy Now</Button>
+              <Button variant="primary" style={{'height':'50px'}} onClick={() => handleAddToCart(product)}>Add to Cart</Button>
+              <Button variant="success" style={{'height':'50px'}} onClick={() => handleBuyNow(product)}>Buy Now</Button>
             </>
           ) : (
             <>
@@ -177,21 +203,47 @@ const Products = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <ToastContainer />
-      <div className="text-center my-4">
-        <Form inline>
-          <Col md={6} className="mx-auto d-flex">
-            <FormControl
-              type="text"
-              placeholder="Search"
-              className="mr-2 flex-grow-1"
-              value={searchQuery}
-              onChange={handleSearch}
-            />
-            <Button variant="danger">Search</Button>
-          </Col>
+      <div className="flex justify-between items-center mb-4">
+        <Dropdown className="filter-dropdown">
+          <Dropdown.Toggle id="dropdown-basic" className="bg-gray-200 text-purple-700 border-white">
+            Filters
+          </Dropdown.Toggle>
+          <Dropdown.Menu className="p-2">
+            <Form.Group controlId="colorFilter">
+              <Form.Label>Category</Form.Label>
+              <Form.Control as="select" value={colorFilter} onChange={(e) => setColorFilter(e.target.value)}>
+                <option value="">All</option>
+                <option value="Capsule">Capsule</option>
+                <option value="Syrup">Syrup</option>
+                <option value="Others">Others</option>
+              </Form.Control>
+            </Form.Group>
+            <Form.Group controlId="priceRange" className="mt-3">
+              <Form.Label>Price Range</Form.Label>
+              <Form.Control as="select" value={priceRange} onChange={(e) => setPriceRange(e.target.value)}>
+                <option value="">All</option>
+                <option value="0-50">₹0 - ₹50</option>
+                <option value="0-100">₹0 - ₹100</option>
+                <option value="0-150">₹0 - ₹150</option>
+                <option value=">150">₹150+</option>
+              </Form.Control>
+            </Form.Group>
+          </Dropdown.Menu>
+        </Dropdown>
+        <Form inline className="search-form flex">
+          <FormControl
+            type="text"
+            placeholder="Search"
+            className="mr-2 flex-grow w-64"
+            value={searchQuery}
+            onChange={handleSearch}
+          />
+          <Button variant="danger">Search</Button>
         </Form>
       </div>
-      {rows}
+      <div>
+        {rows}
+      </div>
       <Pagination className="justify-content-center mt-4">
         <Pagination.First onClick={() => setCurrentPage(1)} disabled={currentPage === 1} />
         <Pagination.Prev onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1} />
@@ -207,4 +259,4 @@ const Products = () => {
   );
 };
 
-export {Products};
+export { Products };

@@ -89,7 +89,7 @@ export const Login = () => {
           {errorMessage && <div className="error-message">{errorMessage}</div>}
         </div>
         <div className="forgot-password">
-          Forgot Password? <span className='clickhere'>Click Here</span>
+          Forgot Password? <Link to = '/forgotpass' className='clickhere' >Click Here</Link>
         </div>
         <div className="submit-container">
           <button type="submit" className='submit'>Login</button>

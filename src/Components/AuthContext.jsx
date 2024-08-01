@@ -41,7 +41,7 @@ export const AuthProvider = ({ children, onRoleChange }) => {
     const logout = () => {
         setToken("");
         setUser(null);
-        setRole(null);
+        setRole("");
         setUserId(null);
         localStorage.removeItem("token");
         localStorage.removeItem("role");
