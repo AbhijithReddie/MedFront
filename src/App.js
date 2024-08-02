@@ -30,6 +30,7 @@ import ProdPrescription from './Components/ProdPrescription';
 import ProductPage from './Components/ProductPage';
 import AdminOrders from './Components/AdminOrders';
 import ForgotPassword from './Components/ForgotPassword';
+import OtpVerification from './Components/OTPVerification';
 const App = () => {
     const [role, setRole] = useState(localStorage.getItem('role') || "");
 
@@ -64,6 +65,7 @@ const App = () => {
                             <Route path='/confirmProd' element={<ConfirmProd/>}/>
                             <Route path='/prodPres' element={<ProdPrescription/>}/>
                             <Route path='prodPage' element={<ProductPage/>}/>
+                            <Route path='/verifyOTP' element={<OtpVerification/>}/>
                             <Route element={<UserPrivateRoutes />}>
                                 <Route path='/home' element={<Home />} />
                                 <Route path="/cart" element={<Cart />} />
