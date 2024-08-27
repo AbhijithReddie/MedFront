@@ -24,12 +24,9 @@ const AdminSideBar = () => {
                     <FaUsers className="me-3" />
                     Customers
                 </Nav.Link>
-                <Nav.Link as={NavLink} to="" className="sidebar-link">
-                    <FaChartLine className="me-3" />
-                    Analytics & Reports
-                </Nav.Link>
                 
-                <Nav.Link as={NavLink} to="/admin/customerFeedback" className="sidebar-link">
+                
+                <Nav.Link as={NavLink} to="/admin/feedbacks" className="sidebar-link">
                     <FaUser className="me-3" />
                     Customer Feedback
                 </Nav.Link>
