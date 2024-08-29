@@ -16,11 +16,11 @@ const ForgotPassword = ({ onOtpSent = () => {} }) => {
         setError('Please enter your email');
         return;
       }
-      const response = await axios.post('http://localhost:5632/login/reset', { email });
+      const response = await axios.post('http://localhost:5632/login/reset', { email:email });
       setMessage('If an account with that email exists, a password reset link has been sent.');
       setError('');
       onOtpSent(email);
-      navigate('/verifyOTP');
+      navigate('/verifyOTP',{state:{email:email}});
     } catch (e) {
       console.error(e);
       setError('Error in sending OTP');

@@ -1,21 +1,33 @@
 import React, { useState } from 'react';
 import { TextField, Button, Container, Box, Typography, Alert } from '@mui/material';
 import axios from 'axios';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-const OtpVerification = ({ email, onVerified }) => {
+const OtpVerification = () => {
   const [otp, setOtp] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-
+  const navigate=useNavigate();
+  const location=useLocation();
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5632/login/verify-otp', { email, otp });
+      const email=location.state?.email;
+      console.log('Email received is ',email);
+      const response = await axios.post('http://localhost:5632/login/verifyOTP', { email:email, otp });
+      if(response.data.message==='OTP has expired') {
+        alert('Sorry Your OTP has Expired, Please try again..');  
+        navigate('/forgotpass');
+      }
+      console.log("error please");
       setMessage('OTP verified successfully.');
       setError('');
-      onVerified();
+      navigate('/resetpassword',{state:{email}});
+      // onVerified();
     } catch (e) {
+      console.log(e);
       setError('Invalid OTP');
+      
     }
   };
 

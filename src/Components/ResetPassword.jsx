@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { TextField, Button, Container, Box, Typography, Alert } from '@mui/material';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-const ResetPassword = ({ onPasswordReset = () => {} }) => {
+const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
+  const location=useLocation();
+  const email=location.state?.email;
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
@@ -19,12 +20,12 @@ const ResetPassword = ({ onPasswordReset = () => {} }) => {
 
     try {
       const response = await axios.post('http://localhost:5632/login/reset-password', {
-        newPassword,
-        confirmPassword,
+        email,
+        newPass:newPassword,
+        confirmPass:confirmPassword,
       });
       setMessage('Password has been reset successfully.');
       setError('');
-      onPasswordReset();
       navigate('/login');
     } catch (e) {
       console.error(e);
